@@ -8,7 +8,10 @@ import 'package:weather_app/res/types.dart';
 
 late AppearanceChangeProvider _appearanceChangeProvider;
 
-void main() => runApp(const MyApp());
+void main() {
+  _appearanceChangeProvider = AppearanceChangeProvider();
+  runApp(const MyApp());
+}
 
 class MyApp extends StatelessWidget {
   const MyApp({Key? key}) : super(key: key);
