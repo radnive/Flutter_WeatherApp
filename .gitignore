@@ -53,3 +53,6 @@ app.*.map.json
 # These file should be ignore, otherwise build_runner will complain about it being changed each time we pull a change.
 /lib/objectbox.g.dart
 /lib/objectbox-model.json
+
+# API Keys file.
+/lib/models/api_keys.dart
