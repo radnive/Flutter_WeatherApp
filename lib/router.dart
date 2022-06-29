@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/pages/start.dart';
 
 // To hold app route path information.
 class AppRoutePath {
@@ -69,7 +70,10 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
         popRoute();
         return true;
       },
-      pages: const []
+      pages: [
+        // Start page.
+        MaterialPage(key: const ValueKey('StartPage'), child: StartPage(navigateTo: _navigateTo))
+      ]
     );
   }
 
