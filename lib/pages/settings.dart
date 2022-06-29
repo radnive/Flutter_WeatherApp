@@ -1,5 +1,6 @@
 import 'package:flutter/cupertino.dart' show CupertinoSwitch;
 import 'package:flutter/material.dart';
+import 'package:weather_app/components/blur_container.dart';
 import 'package:weather_app/components/bottom_sheets/contact_me_bottom_sheet.dart';
 import 'package:weather_app/components/bottom_sheets/feedback_bottom_sheet.dart';
 import 'package:weather_app/components/bottom_sheets/multi_option_bottom_sheet.dart';
@@ -61,8 +62,28 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   // Build item divider.
-  Divider _buildDivider(BuildContext context) =>
-      Divider(height: 48, thickness: 1, color: _palette.divider, indent: 24, endIndent: 24);
+  Divider _buildDivider() => Divider(height: 48, thickness: 1, color: _palette.divider, indent: 24, endIndent: 24);
+
+  // Build TopAppBar.
+  BlurContainer _buildTopAppBar(BuildContext context) => BlurContainer(
+    border: Border(bottom: BorderSide(color: _palette.border)),
+    padding: EdgeInsets.fromLTRB(
+      Dimens.horizontalPadding,
+      MediaQuery.of(context).viewPadding.top + Dimens.topAppbarTopPadding,
+      Dimens.horizontalPadding,
+      Dimens.topAppbarBottomPadding
+    ),
+    child: TopAppBar.withBackButton(
+      title: _strings.settingsTitle,
+      titleStyle: _types.headline6!.apply(color: _palette.onBackground),
+      subtitle: _strings.settingsSubtitle,
+      subtitleStyle: _types.caption!.apply(color: _palette.subtitle),
+      buttonBorder: _palette.border,
+      buttonIconColor: _palette.onBackground,
+      ltr: _strings.locale == 'en',
+      onButtonPressed: onBackPressed
+    )
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -71,6 +92,7 @@ class SettingsPageState extends State<SettingsPage> {
     _types = Types.of(context);
     _strings = S.of(context);
 
+    // Build page.
     return Scaffold(
       backgroundColor: _palette.background,
       body: AnnotatedRegion(
@@ -103,7 +125,7 @@ class SettingsPageState extends State<SettingsPage> {
                       text: userSettings.visibilityUnit.name,
                       onPressed: () => _showSelectVisibilityUnitBottomSheet(context),
                     ),
-                    _buildDivider(context), // --------------------------------------
+                    _buildDivider(), // --------------------------------------
                     _TitleItem(title: _strings.otherSettingsTitle),
                     _MultiSelectItem(
                       title: _strings.languageItemText,
@@ -121,7 +143,7 @@ class SettingsPageState extends State<SettingsPage> {
                         firstValue: Settings.get(db).autoUpdate,
                         onChanged: (isOn) => userSettings.apply(autoUpdate: isOn).update(db)
                     ),
-                    _buildDivider(context), // --------------------------------------
+                    _buildDivider(), // --------------------------------------
                     _TitleItem(title: _strings.communicationSettingsTitle),
                     _ChevronSettingItem(
                       title: _strings.feedbackItemText,
@@ -132,7 +154,7 @@ class SettingsPageState extends State<SettingsPage> {
                       title: _strings.contactMeItemText,
                       onPressed: () => _showContactMeBottomSheet(context)
                     ),
-                    _buildDivider(context), // --------------------------------------
+                    _buildDivider(), // --------------------------------------
                     _TitleItem(title: _strings.aboutTitle),
                     _TextSettingItem(
                         title: _strings.appVersionItemText,
@@ -161,17 +183,7 @@ class SettingsPageState extends State<SettingsPage> {
             ),
             Positioned(
               top: 0, left: 0, right: 0,
-              child: TopAppBar.withBackButton(
-                context,
-                title: _strings.settingsTitle,
-                titleStyle: _types.headline6!.apply(color: _palette.onBackground),
-                subtitle: _strings.settingsSubtitle,
-                subtitleStyle: _types.caption!.apply(color: _palette.subtitle),
-                buttonBorder: _palette.border,
-                buttonIconColor: _palette.onBackground,
-                bottomBorder: _palette.divider,
-                onButtonPressed: onBackPressed
-              )
+              child: _buildTopAppBar(context)
             )
           ],
         ),
