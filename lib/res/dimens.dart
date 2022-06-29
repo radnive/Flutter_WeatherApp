@@ -10,7 +10,11 @@ class Dimens {
   static const double topAppbarBottomPadding = 32;
   static const double topAppbarButtonSize = 40;
   static const double topAppbarButtonIconSize = 24;
+  static const double topAppbarHeight = (topAppbarButtonSize + topAppbarTopPadding + topAppbarBottomPadding);
 
   // :: BlurContainer
   static const double blurContainerSigma = 5;
+
+  // :: Settings page.
+  static const double settingsItemsIconSize = 22;
 }

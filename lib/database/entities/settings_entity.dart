@@ -54,6 +54,13 @@ class Settings {
     _language = language,
     _themeMode = themeMode;
 
+  // Get user settings index.
+  int get temperatureUnitIndex => _temperatureUnit;
+  int get windSpeedUnitIndex => _windSpeedUnit;
+  int get visibilityUnitIndex => _visibilityUnit;
+  int get languageIndex => _language;
+  int get themeModeIndex => _themeMode;
+
   // Get user settings.
   TemperatureUnit get temperatureUnit => TemperatureUnit.get(_temperatureUnit);
   WindSpeedUnit get windSpeedUnit => WindSpeedUnit.get(_windSpeedUnit);
@@ -77,6 +84,35 @@ class Settings {
     if (themeMode != null) { _themeMode = themeMode; }
     if (autoUpdate != null) { this.autoUpdate = autoUpdate; }
     return this;
+  }
+
+  // Just copy.
+  Settings copy() => Settings(
+    temperatureUnit: _temperatureUnit,
+    windSpeedUnit: _windSpeedUnit,
+    visibilityUnit: _visibilityUnit,
+    language: _language,
+    themeMode: _themeMode,
+    autoUpdate: autoUpdate,
+  );
+
+  // Copy settings with new properties value.
+  Settings copyWith({
+    int? temperatureUnit,
+    int? windSpeedUnit,
+    int? visibilityUnit,
+    int? language,
+    int? themeMode,
+    bool? autoUpdate
+  }) {
+    return Settings(
+      temperatureUnit: (temperatureUnit != null)? temperatureUnit : _temperatureUnit,
+      windSpeedUnit: (windSpeedUnit != null)? windSpeedUnit : _windSpeedUnit,
+      visibilityUnit: (visibilityUnit != null)? visibilityUnit : _visibilityUnit,
+      language: (language != null)? language : _language,
+      themeMode: (themeMode != null)? themeMode : _themeMode,
+      autoUpdate: (autoUpdate != null)? autoUpdate : this.autoUpdate,
+    );
   }
 
   // CRUD functions.
