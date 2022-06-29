@@ -49,3 +49,7 @@ app.*.map.json
 # These assets are not allowed in the GitHub repository because they are not free.
 /assets/fonts/iran_sans/
 /assets/images/piqo_weather_icons/
+
+# These file should be ignore, otherwise build_runner will complain about it being changed each time we pull a change.
+/lib/objectbox.g.dart
+/lib/objectbox-model.json
