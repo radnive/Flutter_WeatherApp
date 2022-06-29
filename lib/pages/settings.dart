@@ -52,7 +52,13 @@ class SettingsPageState extends State<SettingsPage> {
   }
 
   // Call when user press back button (TopAppBar/NavigationBar back button)
-  void onBackPressed() {}
+  void onBackPressed() {
+    if(_isHomePageNeedsToRefresh) {
+      // TODO Tell Home page to refresh itself.
+    } else if(_isHomePageNeedsToRepaint) {
+      // TODO Tell Home page to repaint itself.
+    }
+  }
 
   // Build item divider.
   Divider _buildDivider(BuildContext context) =>
@@ -127,6 +133,28 @@ class SettingsPageState extends State<SettingsPage> {
                       onPressed: () => _showContactMeBottomSheet(context)
                     ),
                     _buildDivider(context), // --------------------------------------
+                    _TitleItem(title: _strings.aboutTitle),
+                    _TextSettingItem(
+                        title: _strings.appVersionItemText,
+                        text: '1.0.5',
+                        topPadding: 16
+                    ),
+                    _TextSettingItem(
+                        title: _strings.developerItemText,
+                        text: 'Radnive'
+                    ),
+                    _TextSettingItem(
+                        title: _strings.weatherDataProviderItemText,
+                        text: 'AccuWeather'
+                    ),
+                    _TextSettingItem(
+                        title: _strings.sunStatusDataProviderItemText,
+                        text: 'IPGeolocation'
+                    ),
+                    _ChevronSettingItem(
+                      title: _strings.privacyPolicyItemText,
+                      topPadding: 8
+                    )
                   ],
                 ),
               )
@@ -261,6 +289,7 @@ class SettingsPageState extends State<SettingsPage> {
   }
 }
 
+// Setting items.
 // :: Title
 class _TitleItem extends StatelessWidget {
   final String title;
@@ -277,6 +306,7 @@ class _TitleItem extends StatelessWidget {
     );
   }
 }
+
 // :: MultiOption
 class _MultiSelectItem extends StatelessWidget {
   final String title;
@@ -329,6 +359,7 @@ class _MultiSelectItem extends StatelessWidget {
     );
   }
 }
+
 // :: Switch
 class _SwitchItem extends StatefulWidget {
   final String title;
@@ -344,6 +375,7 @@ class _SwitchItem extends StatefulWidget {
   @override
   State<_SwitchItem> createState() => _SwitchItemState();
 }
+
 class _SwitchItemState extends State<_SwitchItem> {
   late bool _isActive;
   @override
@@ -377,6 +409,7 @@ class _SwitchItemState extends State<_SwitchItem> {
     );
   }
 }
+
 // :: Chevron
 class _ChevronSettingItem extends StatelessWidget {
   final String title;
@@ -409,6 +442,41 @@ class _ChevronSettingItem extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+
+// :: Text
+class _TextSettingItem extends StatelessWidget {
+  final String title;
+  final String text;
+  final double topPadding;
+  const _TextSettingItem({
+    Key? key,
+    this.title = '',
+    this.text = '',
+    this.topPadding = 0
+  }) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.fromLTRB(24, topPadding + 16, 24, 16),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Expanded(
+            child: Text(
+              title,
+              style: _types.subtitle1!.apply(color: _palette.onBackground),
+            ),
+          ),
+          Text(
+            text,
+            style: _types.subtitle1!.apply(color: _palette.subtitle),
+          )
+        ],
       ),
     );
   }
