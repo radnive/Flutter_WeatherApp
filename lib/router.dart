@@ -1,4 +1,10 @@
+import 'dart:io' show Platform, exit;
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart' show SystemNavigator;
+import 'package:weather_app/components/message.dart';
+import 'package:weather_app/generated/l10n.dart';
+import 'package:weather_app/global_keys.dart';
+import 'package:weather_app/pages/settings.dart';
 import 'package:weather_app/pages/start.dart';
 
 // To hold app route path information.
@@ -72,13 +78,26 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
       },
       pages: [
         // Start page.
-        MaterialPage(key: const ValueKey('StartPage'), child: StartPage(navigateTo: _navigateTo))
+        MaterialPage(key: const ValueKey('StartPage'), child: StartPage(navigateTo: _navigateTo)),
+
+        // Settings page.
+        if(_currentRoute.isSettings) SlidePage(
+          key: const ValueKey('SettingsPage'),
+          child: SettingsPage(
+            navigateTo: _navigateTo,
+            changeBackButtonStatus: _setBackButtonStatus
+          )
+        )
       ]
     );
   }
 
   @override
   Future<bool> popRoute() async {
+    if(_currentRoute.isSettings) {
+      // Tell Settings page that back button pressed.
+      settingsPageGlobalKey.currentState?.onBackPressed();
+    }
     // :: Check for back button availability.
     if(_isBackButtonDisabled) { return true; }
     // :: Confirm exit app when user click on NavigationBar back button in home or start pages.
@@ -96,8 +115,35 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
 
   // Confirm exit app when user click on NavigationBar back button in home or start pages.
   Future<bool> _confirmExitApp() async {
-    // TODO Ask user to exit.
-    return true;
+    // Get BuildContext from navigatorKey.
+    BuildContext? context = navigatorKey?.currentContext;
+
+    // Check for context.
+    if(context != null) {
+      // Get Strings resource.
+      final strings = S.of(context);
+
+      // Show confirm exit message.
+      Message(context).e(
+        title: strings.confirmExitMessageTitle,
+        subtitle: strings.confirmExitMessageSubtitle,
+        buttonText: strings.yesButtonText,
+        onButtonPressed: () {
+          // Check for platform.
+          if (Platform.isAndroid) {
+            // Close app on android devices.
+            SystemNavigator.pop();
+          } else if (Platform.isIOS) {
+            // Close app on iOS devices.
+            exit(0);
+          }
+        }
+      );
+
+      return true; // TRUE means back button is disable and app doesn't close.
+    } else {
+      return false; // FALSE means back button is enable and app will close.
+    }
   }
 
   @override
