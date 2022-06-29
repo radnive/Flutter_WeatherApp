@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:weather_app/components/top_app_bar.dart';
 import 'package:weather_app/database/database.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/generated/l10n.dart';
@@ -46,7 +47,23 @@ class _SettingsPageState extends State<SettingsPage> {
       backgroundColor: _palette.background,
       body: AnnotatedRegion(
         value: Theme.of(context).uiOverlayStyle,
-        child: Container(),
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0, left: 0, right: 0,
+              child: TopAppBar.withBackButton(
+                context,
+                title: _strings.settingsTitle,
+                titleStyle: _types.headline6!.apply(color: _palette.onBackground),
+                subtitle: _strings.settingsSubtitle,
+                subtitleStyle: _types.caption!.apply(color: _palette.subtitle),
+                buttonBorder: _palette.border,
+                buttonIconColor: _palette.onBackground,
+                bottomBorder: _palette.divider
+              )
+            )
+          ],
+        ),
       ),
     );
   }
