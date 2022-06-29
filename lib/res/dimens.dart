@@ -17,4 +17,10 @@ class Dimens {
 
   // :: Settings page.
   static const double settingsItemsIconSize = 22;
+
+  // :: ManageLocations page.
+  static const double searchBoxIconsSize = 22;
+  static const double searchBoxButtonSize = 42;
+  static const double searchBoxBackButtonSize = 47;
+  static const double searchBoxBackButtonIconSize = 32;
 }

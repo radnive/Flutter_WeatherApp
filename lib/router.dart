@@ -2,8 +2,10 @@ import 'dart:io' show Platform, exit;
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemNavigator;
 import 'package:weather_app/components/message.dart';
+import 'package:weather_app/database/database.dart';
 import 'package:weather_app/generated/l10n.dart';
 import 'package:weather_app/global_keys.dart';
+import 'package:weather_app/pages/manage_locations.dart';
 import 'package:weather_app/pages/settings.dart';
 import 'package:weather_app/pages/start.dart';
 
@@ -58,11 +60,12 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
 
   @override
   GlobalKey<NavigatorState>? navigatorKey;
+  Database db;
   AppRoutePath _currentRoute;
   bool _isBackButtonDisabled;
 
   // Create router.
-  AppRouterDelegate() :
+  AppRouterDelegate(this.db) :
     navigatorKey = GlobalKey<NavigatorState>(),
     _currentRoute = AppRoutePath.start(),
     _isBackButtonDisabled = false;
@@ -80,10 +83,21 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
         // Start page.
         MaterialPage(key: const ValueKey('StartPage'), child: StartPage(navigateTo: _navigateTo)),
 
+        // ManageLocations page.
+        if(_currentRoute.isManageLocations) SlidePage(
+          key: const ValueKey('ManageLocations'),
+          child: ManageLocations(
+            appBarKey: manageLocationsAppBarPageGlobalKey,
+            navigateTo: _navigateTo,
+            changeBackButtonStatus: _setBackButtonStatus,
+          )
+        ),
+
         // Settings page.
         if(_currentRoute.isSettings) SlidePage(
           key: const ValueKey('SettingsPage'),
           child: SettingsPage(
+            key: settingsPageGlobalKey,
             navigateTo: _navigateTo,
             changeBackButtonStatus: _setBackButtonStatus
           )
@@ -98,6 +112,12 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
       // Tell Settings page that back button pressed.
       settingsPageGlobalKey.currentState?.onBackPressed();
     }
+
+    if(_currentRoute.isManageLocations) {
+      // Tell Settings page that back button pressed.
+      manageLocationsAppBarPageGlobalKey.currentState?.onBackPressed();
+    }
+
     // :: Check for back button availability.
     if(_isBackButtonDisabled) { return true; }
     // :: Confirm exit app when user click on NavigationBar back button in home or start pages.

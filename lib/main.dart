@@ -20,7 +20,7 @@ void main() async {
   Database db = Database();
   await db.create();
   // Create router and information parser.
-  _routerDelegate = AppRouterDelegate();
+  _routerDelegate = AppRouterDelegate(db);
   _informationParser = AppRouteInformationParser();
   // Load user settings into provider.
   _loadUserSettings(db);
