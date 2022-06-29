@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart' show CupertinoSwitch;
 import 'package:flutter/material.dart';
 import 'package:weather_app/components/bottom_sheets/multi_option_bottom_sheet.dart';
 import 'package:weather_app/components/top_app_bar.dart';
@@ -5,6 +6,7 @@ import 'package:weather_app/database/database.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
+import 'package:weather_app/provider.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
 import 'package:weather_app/res/dimens.dart';
@@ -94,6 +96,24 @@ class SettingsPageState extends State<SettingsPage> {
                       onPressed: () => _showSelectVisibilityUnitBottomSheet(context),
                     ),
                     _buildDivider(context), // --------------------------------------
+                    _TitleItem(title: _strings.otherSettingsTitle),
+                    _MultiSelectItem(
+                      title: _strings.languageItemText,
+                      text: _strings.languagesChoiceTitles.split(',')[userSettings.languageIndex],
+                      topPadding: 16,
+                      onPressed: () => _showSelectLanguageBottomSheet(context),
+                    ),
+                    _MultiSelectItem(
+                      title: _strings.themeItemText,
+                      text: _strings.themeChoiceTitles.split(',')[userSettings.themeModeIndex],
+                      onPressed: () => _showSelectThemeBottomSheet(context),
+                    ),
+                    _SwitchItem(
+                        title: _strings.autoUpdateItemText,
+                        firstValue: Settings.get(db).autoUpdate,
+                        onChanged: (isOn) => userSettings.apply(autoUpdate: isOn).update(db)
+                    ),
+                    _buildDivider(context), // --------------------------------------
                   ],
                 ),
               )
@@ -175,6 +195,43 @@ class SettingsPageState extends State<SettingsPage> {
       )
     );
   }
+  // :: Language
+  void _showSelectLanguageBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) => MultiOptionBottomSheet(
+            title: _strings.languageBottomSheetTitle,
+            itemTitles: _strings.languagesChoiceTitles.split(','),
+            itemSubtitles: _strings.languagesChoiceSubtitles.split(','),
+            selectedItemIndex: userSettings.languageIndex,
+            cancelButtonText: _strings.cancelButtonText,
+            onChange: (index) {
+              userSettings.apply(language: index).update(db);
+              context.appearanceProvider.setLanguage(Language.get(index));
+              _isHomePageNeedsToRefresh = (index != _currentSettings.languageIndex);
+              setState(() {});
+            }
+        )
+    );
+  }
+// :: Theme
+  void _showSelectThemeBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        context: context,
+        builder: (_) => MultiOptionBottomSheet(
+            title: _strings.themeBottomSheetTitle,
+            itemTitles: _strings.themeChoiceTitles.split(','),
+            itemSubtitles: _strings.themeChoiceSubtitles.split(','),
+            selectedItemIndex: userSettings.themeModeIndex,
+            cancelButtonText: _strings.cancelButtonText,
+            onChange: (index) {
+              userSettings.apply(themeMode: index).update(db);
+              context.appearanceProvider.setThemeMode(ThemeMode.values[index]);
+              setState(() {});
+            }
+        )
+    );
+  }
 }
 
 // :: Title
@@ -241,6 +298,54 @@ class _MultiSelectItem extends StatelessWidget {
             ],
           ),
         ),
+      ),
+    );
+  }
+}
+// :: Switch
+class _SwitchItem extends StatefulWidget {
+  final String title;
+  final bool firstValue;
+  final void Function(bool value)? onChanged;
+  const _SwitchItem({
+    Key? key,
+    this.title = '',
+    this.firstValue = false,
+    this.onChanged
+  }) : super(key: key);
+
+  @override
+  State<_SwitchItem> createState() => _SwitchItemState();
+}
+class _SwitchItemState extends State<_SwitchItem> {
+  late bool _isActive;
+  @override
+  void initState() {
+    _isActive = widget.firstValue;
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 8),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(
+            widget.title,
+            style: _types.subtitle1!.apply(color: _palette.onBackground),
+          ),
+          CupertinoSwitch(
+            value: _isActive,
+            onChanged: (bool newValue){
+              if(widget.onChanged != null) { widget.onChanged!(newValue); }
+              setState(() => _isActive = newValue);
+            },
+            activeColor: _palette.primary,
+            trackColor: _palette.subtitle,
+          )
+        ],
       ),
     );
   }
