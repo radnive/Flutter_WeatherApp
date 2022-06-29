@@ -1,5 +1,6 @@
 import 'package:connectivity/connectivity.dart';
 import 'package:flutter/material.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class Internet {
   static int okayStatusCode = 200;
@@ -17,5 +18,14 @@ class Internet {
         ifConnected();
       }
     });
+  }
+
+  static void openUrl(BuildContext context, {required String url, void Function()? onError}) async {
+    try {
+      await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);
+    } catch(error) {
+      if (onError != null) { onError(); }
+      // TODO Show error message.
+    }
   }
 }

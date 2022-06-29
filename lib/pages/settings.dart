@@ -1,5 +1,7 @@
 import 'package:flutter/cupertino.dart' show CupertinoSwitch;
 import 'package:flutter/material.dart';
+import 'package:weather_app/components/bottom_sheets/contact_me_bottom_sheet.dart';
+import 'package:weather_app/components/bottom_sheets/feedback_bottom_sheet.dart';
 import 'package:weather_app/components/bottom_sheets/multi_option_bottom_sheet.dart';
 import 'package:weather_app/components/top_app_bar.dart';
 import 'package:weather_app/database/database.dart';
@@ -114,6 +116,17 @@ class SettingsPageState extends State<SettingsPage> {
                         onChanged: (isOn) => userSettings.apply(autoUpdate: isOn).update(db)
                     ),
                     _buildDivider(context), // --------------------------------------
+                    _TitleItem(title: _strings.communicationSettingsTitle),
+                    _ChevronSettingItem(
+                      title: _strings.feedbackItemText,
+                      topPadding: 16,
+                      onPressed: () => _showFeedbackBottomSheet(context)
+                    ),
+                    _ChevronSettingItem(
+                      title: _strings.contactMeItemText,
+                      onPressed: () => _showContactMeBottomSheet(context)
+                    ),
+                    _buildDivider(context), // --------------------------------------
                   ],
                 ),
               )
@@ -214,7 +227,7 @@ class SettingsPageState extends State<SettingsPage> {
         )
     );
   }
-// :: Theme
+  // :: Theme
   void _showSelectThemeBottomSheet(BuildContext context) {
     showModalBottomSheet(
         context: context,
@@ -230,6 +243,20 @@ class SettingsPageState extends State<SettingsPage> {
               setState(() {});
             }
         )
+    );
+  }
+  // :: Feedback bottom sheet.
+  void _showFeedbackBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => const FeedBackBottomSheet()
+    );
+  }
+  // :: Contact me bottom sheet.
+  void _showContactMeBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      builder: (_) => const ContactMeBottomSheet()
     );
   }
 }
@@ -346,6 +373,42 @@ class _SwitchItemState extends State<_SwitchItem> {
             trackColor: _palette.subtitle,
           )
         ],
+      ),
+    );
+  }
+}
+// :: Chevron
+class _ChevronSettingItem extends StatelessWidget {
+  final String title;
+  final double topPadding;
+  final void Function()? onPressed;
+  const _ChevronSettingItem({Key? key, this.title = '', this.topPadding = 0, this.onPressed}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: EdgeInsets.only(top: topPadding, left: 8, right: 8),
+      child: InkWell(
+        onTap: onPressed,
+        borderRadius: BorderRadius.circular(Dimens.mediumShapesBorderRadius),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                title,
+                style: _types.subtitle1!.apply(color: _palette.onBackground),
+              ),
+              Image.asset(
+                (_strings.locale == 'en')? IconAssets.remixRightArrow : IconAssets.remixLeftArrow,
+                width: Dimens.settingsItemsIconSize,
+                height: Dimens.settingsItemsIconSize,
+                color: _palette.subtitle,
+              )
+            ],
+          ),
+        ),
       ),
     );
   }
