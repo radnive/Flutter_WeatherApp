@@ -111,7 +111,12 @@ class SavedLocation {
   }
 
   /// Add new location object to database.
-  void put(Database db) => db.store.box<SavedLocation>().put(this);
+  void put(Database db) {
+    // Pin location if the SavedLocations collection is empty.
+    apply(isPinned: isCollectionEmpty(db));
+    // Add to database.
+    db.store.box<SavedLocation>().put(this);
+  }
 
   /// Update SavedLocation.
   void update(Database db) => db.store.box<SavedLocation>().put(this);

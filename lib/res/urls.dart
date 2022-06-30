@@ -11,7 +11,7 @@ class Urls {
     // Check for language.
     final String lang = (locale != 'en')? '&language=$locale' : '';
     // Create Uri.
-    return Uri.parse('$baseUrl/locations/v1/cities/autocomplete?${ApiKeys.accuweather}&q=${textQuery.toLowerCase()}$lang');
+    return Uri.parse('$baseUrl/locations/v1/cities/autocomplete?${ApiKeys.accuweather}&q=$textQuery$lang');
   }
 
   /// Search location by its key.

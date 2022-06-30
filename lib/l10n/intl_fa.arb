@@ -75,7 +75,7 @@
   "okayButtonText": "باشه",
   "retryButtonText": "تلاش مجدد",
   "locationNotFoundMessageTitle": "چیزی پیدا نشد!",
-  "locationNotFoundMessageSubtitle": "هیچ مکانی با این نام در دنیا وجود ندارد.",
+  "locationNotFoundMessageSubtitle": "هیچ مکانی با این نام پیدا نشد.",
   "emptyListMessageTitle": "لیست خالی است!",
   "emptyListMessageSubtitle": "بزن بریم مکان مورد علاقه ات رو اضافه کنیم.",
 

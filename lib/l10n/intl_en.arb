@@ -74,8 +74,8 @@
   "addedButtonText": "Added",
   "okayButtonText": "Okay",
   "retryButtonText": "Retry",
-  "locationNotFoundMessageTitle": "Nothing Founded!",
-  "locationNotFoundMessageSubtitle": "There is no location with this name in the world.",
+  "locationNotFoundMessageTitle": "Nothing Found!",
+  "locationNotFoundMessageSubtitle": "No location with this name found.",
   "emptyListMessageTitle": "The List Is Empty!",
   "emptyListMessageSubtitle": "Let's add your favorite locations.",
 

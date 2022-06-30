@@ -600,20 +600,20 @@ class S {
     );
   }
 
-  /// `Nothing Founded!`
+  /// `Nothing Found!`
   String get locationNotFoundMessageTitle {
     return Intl.message(
-      'Nothing Founded!',
+      'Nothing Found!',
       name: 'locationNotFoundMessageTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `There is no location with this name in the world.`
+  /// `No location with this name found.`
   String get locationNotFoundMessageSubtitle {
     return Intl.message(
-      'There is no location with this name in the world.',
+      'No location with this name found.',
       name: 'locationNotFoundMessageSubtitle',
       desc: '',
       args: [],

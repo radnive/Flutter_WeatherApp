@@ -69,14 +69,14 @@ class Internet {
     void Function()? onNoResponse,
     void Function()? onRetry,
     void Function(dynamic error)? onError,
-    void Function(bool isOkay)? onCompleted
+    void Function(bool isOkay)? onComplete
   }) {
     // Show error message.
     void showErrorMessage(dynamic error) {
       // Call onError method.
       if(onError != null) onError(error);
       // Call onCompleted method.
-      if(onCompleted != null) onCompleted(false);
+      if(onComplete != null) onComplete(false);
       // Get Strings resource.
       final S strings = S.of(context);
       // Show error message.
@@ -94,7 +94,7 @@ class Internet {
             onResponse: onResponse,
             onNoResponse: onNoResponse,
             onError: onError,
-            onCompleted: onCompleted
+            onComplete: onComplete
           );
         }
       );
@@ -105,12 +105,12 @@ class Internet {
         // Call onResponse method.
         if(onResponse != null) onResponse(response);
         // Call onComplete method.
-        if(onCompleted != null) onCompleted(true);
+        if(onComplete != null) onComplete(true);
       } else if(response.statusCode == exceededRequestNumberStatusCode) {
         // Call onNoResponse method.
         if(onNoResponse != null) onNoResponse();
         // Call onComplete method.
-        if(onCompleted != null) onCompleted(false);
+        if(onComplete != null) onComplete(false);
         // Get Strings resource.
         final S strings = S.of(context);
         // Show warning message.

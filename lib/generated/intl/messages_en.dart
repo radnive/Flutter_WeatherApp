@@ -84,9 +84,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Persian,English"),
         "locale": MessageLookupByLibrary.simpleMessage("en"),
         "locationNotFoundMessageSubtitle": MessageLookupByLibrary.simpleMessage(
-            "There is no location with this name in the world."),
+            "No location with this name found."),
         "locationNotFoundMessageTitle":
-            MessageLookupByLibrary.simpleMessage("Nothing Founded!"),
+            MessageLookupByLibrary.simpleMessage("Nothing Found!"),
         "manageLocationsSubtitle":
             MessageLookupByLibrary.simpleMessage("Add or remove Locations."),
         "manageLocationsTitle":

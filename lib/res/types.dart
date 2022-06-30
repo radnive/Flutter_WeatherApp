@@ -22,7 +22,7 @@ class Types {
   static TextStyle savedLocationTemperature = const TextStyle(fontWeight: FontWeight.w600, fontSize: 45);
   static TextStyle multiSelectItemText = const TextStyle(fontWeight: FontWeight.w600, fontSize: 24);
   static TextStyle messageTitle = const TextStyle(fontWeight: FontWeight.w600, fontSize: 20);
-  static TextStyle foundedLocationTitle = const TextStyle(fontWeight: FontWeight.w500, fontSize: 18);
+  static TextStyle searchResultLocationTitle = const TextStyle(fontWeight: FontWeight.w500, fontSize: 18);
 
   // Create TextTheme.
   static TextTheme get textTheme => ThemeData().textTheme.copyWith(
@@ -53,5 +53,5 @@ extension TextThemeExtension on TextTheme {
   TextStyle get savedLocationTemperature => Types.savedLocationTemperature;
   TextStyle get multiSelectItemText => Types.multiSelectItemText;
   TextStyle get messageTitle => Types.messageTitle;
-  TextStyle get foundedLocationTitle => Types.foundedLocationTitle;
+  TextStyle get searchResultLocationTitle => Types.searchResultLocationTitle;
 }

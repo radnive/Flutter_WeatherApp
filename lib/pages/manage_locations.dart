@@ -7,6 +7,7 @@ import 'package:location/location.dart';
 import 'package:weather_app/components/blur_container.dart';
 import 'package:weather_app/components/empty_list_message.dart';
 import 'package:weather_app/components/message.dart';
+import 'package:weather_app/components/shimmer_loading.dart';
 import 'package:weather_app/components/square_image.dart';
 import 'package:weather_app/components/top_app_bar.dart';
 import 'package:weather_app/database/database.dart';
@@ -14,6 +15,7 @@ import 'package:weather_app/database/entities/saved_location_entity.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
+import 'package:weather_app/models/search_result_location.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
 import 'package:weather_app/res/dimens.dart';
@@ -31,14 +33,17 @@ late Settings _userSettings;
 
 late TextEditingController _searchTextFieldController;
 
-enum _ListPages { savedLocations }
+enum _ListPages { savedLocations, searchResult }
 late PageController _pageController;
-void _jumpToListPage(_ListPages page) => _pageController.jumpTo(page.index.toDouble());
+void _jumpToListPage(_ListPages page) => _pageController.jumpToPage(page.index);
 
 // ValueNotifiers.
 // :: For _SavedLocationsList.
 late ValueNotifier<bool> _savedLocationsChangeNotifier;
 void notifySavedLocationsList() => _savedLocationsChangeNotifier.value = !_savedLocationsChangeNotifier.value;
+
+// :: For _SearchResultList.
+late final _SearchResultNotifier _searchChangeNotifier;
 
 // ManageLocations page.
 class ManageLocations extends StatelessWidget {
@@ -61,6 +66,7 @@ class ManageLocations extends StatelessWidget {
     _searchTextFieldController = TextEditingController();
     // Create ValueNotifiers.
     _savedLocationsChangeNotifier = ValueNotifier<bool>(false);
+    _searchChangeNotifier = _SearchResultNotifier(_SearchResultData());
     return super.createElement();
   }
 
@@ -83,7 +89,8 @@ class ManageLocations extends StatelessWidget {
                 controller: _pageController,
                 physics: const NeverScrollableScrollPhysics(),
                 children: const [
-                  _SavedLocationsList()
+                  _SavedLocationsList(),
+                  _SearchResultList()
                 ]
               ),
             ),
@@ -188,8 +195,10 @@ class TopAppBarState extends State<_TopAppBar> {
       if(!_isOnLoadUserLocation) {
         if(_isCollapsed) {
           if(_searchTextFieldController.text.isNotEmpty) {
-            // TODO Search location name.
-            // TODO Go to SearchResultList.
+            // Jump to SearchResultList.
+            _jumpToListPage(_ListPages.searchResult);
+            // Search location name.
+            _searchChangeNotifier.changeSearchQuery(true, _searchTextFieldController.text);
           } else {
             // Show error message.
             Message(context).e(
@@ -256,8 +265,10 @@ class TopAppBarState extends State<_TopAppBar> {
         // Activate error state.
         setState(() => _isOnError = true);
       } else {
-        // TODO Go to SearchResultList.
-        // TODO Send text query to SearchResultList widget.
+        // Jump to SearchResultList.
+        _jumpToListPage(_ListPages.searchResult);
+        // Search location name.
+        _searchChangeNotifier.changeSearchQuery(true, _searchTextFieldController.text);
       }
     },
     decoration: InputDecoration(
@@ -365,7 +376,10 @@ class TopAppBarState extends State<_TopAppBar> {
     }
 
     // :: Change pageView to _SearchResultList.
-    // TODO Go to SearchResultList.
+    // Jump to SearchResultList.
+    _jumpToListPage(_ListPages.searchResult);
+    // Clear SearchNotifier text query and activate loading state.
+    _searchChangeNotifier.changeSearchQuery(true, '');
 
     // :: Active loading state.
     setState(() {
@@ -375,11 +389,11 @@ class TopAppBarState extends State<_TopAppBar> {
 
     // :: Get location data and send latitude and longitude to AccuWeather server.
     location.getLocation().then((locationData) {
-      Internet.get(
-        context,
+      Internet.get(context,
         uri: Urls.searchLocationByData(locationData, locale: _strings.locale),
-        onCompleted: (isOkay) {
-          // TODO Show empty search list if its NOT OKAY.
+        onComplete: (isOkay) {
+          // Show empty search list if its NOT OKAY.
+          if(!isOkay) _searchChangeNotifier.changeSearchResult([]);
           // Deactivate loading state.
           setState(() => _isOnLoadUserLocation = false);
         },
@@ -387,17 +401,20 @@ class TopAppBarState extends State<_TopAppBar> {
           // Activate loading state.
           setState(() => _isOnLoadUserLocation = true);
         },
-        onResponse: (locationResponse) {
-          // TODO Convert json to FoundedLocation object.
-          // TODO Set SearchBox text field to location name.
-          // TODO Notify SearchResultList.
+        onResponse: (response) {
+          // Convert json to SearchResultLocation object.
+          SearchResultLocation srl = SearchResultLocation.fromJson(jsonDecode(response.body), _db);
+          // Set SearchBox text field to location name.
+          _searchTextFieldController.text = srl.name;
+          // Show user location to search result list.
+          _searchChangeNotifier.changeSearchResult([srl]);
         }
       );
     });
   }
 }
 
-// :: SavedLocationsList widget.
+// :: SavedLocationsList
 class _SavedLocationsList extends StatelessWidget {
   const _SavedLocationsList({Key? key}) : super(key: key);
 
@@ -449,7 +466,7 @@ class _SavedLocationItem extends StatefulWidget {
 class _SavedLocationItemState extends State<_SavedLocationItem> {
   bool _isCollapsed = false;
   bool _isOnLoadTemperature = false;
-  String _locationTemperature = '';
+  String _locationTemperature = '0';
 
   @override
   void initState() {
@@ -556,7 +573,7 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
               children: [
                 Text(
                   widget.location.getName(_strings.locale),
-                  style: _types.foundedLocationTitle.apply(color: titleColor)
+                  style: _types.searchResultLocationTitle.apply(color: titleColor)
                 ),
                 Text(
                   widget.location.getAddress(_strings.locale),
@@ -651,7 +668,7 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
     // Check internet connection.
     Internet.check(context, ifConnected: () {
       // Confirm user decision.
-      Message(context).s(
+      Message(context).w(
         title: _strings.confirmMessageTitle,
         subtitle: _strings.confirmMessageSubtitle,
         buttonText: _strings.yesButtonText,
@@ -688,3 +705,218 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
     );
   }
 }
+
+// :: SearchResultList
+class _SearchResultList extends StatelessWidget {
+  const _SearchResultList({Key? key}) : super(key: key);
+
+  /// Build shimmer list.
+  ShimmerLoading _buildShimmerList(BuildContext context) => ShimmerLoading(
+    child: ListView.separated(
+      padding: EdgeInsets.fromLTRB(
+        Dimens.horizontalPadding,
+        Dimens.appbarHeightWithOnlySearchBox +
+          MediaQuery.of(context).viewPadding.top +
+          Dimens.verticalPadding,
+        Dimens.horizontalPadding,
+        Dimens.verticalPadding
+      ),
+      itemCount: 6,
+      separatorBuilder: (_, __) => const SizedBox(height: 40),
+      itemBuilder: (_, __) => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ShimmerContainer(width: 120, height: 21, color: _palette.background),
+              const SizedBox(height: 8),
+              ShimmerContainer(width: 152, height: 13, color: _palette.background)
+            ]
+          ),
+          ShimmerContainer(width: 32, height: 32, color: _palette.background)
+        ]
+      )
+    ),
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return ValueListenableBuilder(
+      valueListenable: _searchChangeNotifier,
+      builder: (_, _SearchResultData data, __) {
+        // Check for loading status.
+        if (data.isOnLoadData) {
+          // Send search request if search query is not empty.
+          if (data.searchQuery.isNotEmpty) { _sendSearchRequest(context, data.searchQuery); }
+          // Show loading shimmer list.
+          return _buildShimmerList(context);
+        }
+        // Show not found message if search result list in empty.
+        if(data.searchResultLocations.isEmpty) {
+          return const EmptyListMessage.notFound();
+        }
+        // Show search result list.
+        return ListView.separated(
+          padding: EdgeInsets.fromLTRB(
+            Dimens.horizontalPadding,
+            Dimens.appbarHeightWithOnlySearchBox + MediaQuery.of(context).viewPadding.top + Dimens.verticalPadding,
+            Dimens.horizontalPadding,
+            Dimens.verticalPadding
+          ),
+          itemCount: data.searchResultLocations.length,
+          separatorBuilder: (_, __) => const SizedBox(height: 40),
+          itemBuilder: (_, int index) => _SearchResultItem(location: data.searchResultLocations[index])
+        );
+      },
+    );
+  }
+
+  /// Send search location by name request to AccuWeather API.
+  void _sendSearchRequest(BuildContext context, String textQuery) {
+    // Send get request.
+    Internet.get(context,
+      uri: Urls.searchLocationByName(textQuery, locale: _strings.locale),
+      onResponse: (response) {
+        // Show search result locations.
+        _searchChangeNotifier.changeSearchResult(
+          SearchResultLocation.fromJsonArray(jsonDecode(response.body), _db)
+        );
+      }
+    );
+  }
+}
+
+// :::: Search result location item widget.
+class _SearchResultItem extends StatefulWidget {
+  final SearchResultLocation location;
+  const _SearchResultItem({Key? key, required this.location}) : super(key: key);
+
+  @override
+  State<_SearchResultItem> createState() => _SearchResultItemState();
+}
+
+class _SearchResultItemState extends State<_SearchResultItem> {
+  bool _isOnLoadData = false;
+
+  @override
+  Widget build(BuildContext context) {
+    return Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                widget.location.name,
+                style: _types.searchResultLocationTitle.apply(color: _palette.onBackground)
+              ),
+              const SizedBox(height: 3),
+              Text(
+                widget.location.address,
+                style: _types.caption!.apply(color: _palette.subtitle)
+              )
+            ],
+          )
+        ),
+        _buildTrailing(context)
+      ],
+    );
+  }
+
+  Widget _buildTrailing(BuildContext context) {
+    if (widget.location.isAdded) {
+      return Row(
+        children: [
+          Text(
+            _strings.addedButtonText,
+            style: _types.button!.apply(color: _palette.subtitle)
+          ),
+          Image.asset(
+            (_strings.locale == 'en')? IconAssets.remixRightArrow : IconAssets.remixLeftArrow,
+            color: _palette.subtitle,
+            width: 24,
+            height: 24,
+          )
+        ]
+      );
+    } else if(_isOnLoadData) {
+      return Padding(
+        padding: const EdgeInsets.all(5),
+        child: CupertinoActivityIndicator(
+          color: _palette.subtitle,
+          radius: 12,
+        ),
+      );
+    } else {
+      return InkWell(
+        splashColor: Colors.transparent,
+        borderRadius: BorderRadius.circular(Dimens.smallShapesBorderRadius),
+        onTap: () => Internet.check(context, ifConnected: () {
+          _getCityInfoAndSaveToDatabase(context);
+        }),
+        child: Padding(
+          padding: const EdgeInsets.all(5),
+          child: SizedBox.square(
+            dimension: 24,
+            child: Image.asset(
+              IconAssets.remixAddFill,
+              fit: BoxFit.fill,
+              color: _palette.subtitle,
+            )
+          ),
+        ),
+      );
+    }
+  }
+
+  void _getCityInfoAndSaveToDatabase(BuildContext context) async {
+    // Activate loading state.
+    setState(() => _isOnLoadData = true);
+    // Get location data from server.
+    Internet.get(context,
+      uri: Urls.searchLocationByKey(widget.location.locationKey),
+      onComplete: (_) => setState(() => _isOnLoadData = false),
+      onResponse: (response) {
+        // Save to database.
+        SavedLocation.fromJson(jsonDecode(response.body)).put(_db);
+        // Change location add status.
+        widget.location.isAdded = true;
+      }
+    );
+  }
+}
+
+// :::: SearchResultList Notifier.
+/// Custom ValueNotifier data model.
+class _SearchResultData {
+  bool isOnLoadData = true;
+  String searchQuery = '';
+  List<SearchResultLocation> searchResultLocations = const [];
+  _SearchResultData();
+}
+
+/// Custom ValueNotifier for SearchResultList.
+class _SearchResultNotifier extends ValueNotifier<_SearchResultData> {
+  final _SearchResultData data;
+  _SearchResultNotifier(this.data) : super(data);
+
+  // Value Notifiers
+  /// Update search query text value.
+  void changeSearchQuery(bool isLoading, String text) {
+    data.searchQuery = (text.toLowerCase().trim());
+    data.isOnLoadData = isLoading;
+    notifyListeners();
+  }
+
+  /// Update search result locations list.
+  void changeSearchResult(List<SearchResultLocation> result) {
+    data.searchResultLocations = result;
+    data.isOnLoadData = false;
+    data.searchQuery = '';
+    notifyListeners();
+  }
+}
+
