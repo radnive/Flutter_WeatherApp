@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:weather_app/components/square_image.dart';
 import 'package:weather_app/generated/l10n.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
@@ -37,9 +36,10 @@ class Message {
       content: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          SquareImage.asset(
+          Image.asset(
             icon,
-            dimension: 24,
+            width: 24,
+            height: 24,
             color: onAlertColor
           ),
           const SizedBox(width: 12),
