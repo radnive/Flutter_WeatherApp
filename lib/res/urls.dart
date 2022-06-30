@@ -29,6 +29,10 @@ class Urls {
     return Uri.parse('$baseUrl/locations/v1/cities/geoposition/search?${ApiKeys.accuweather}&q=$geoLocation$lang');
   }
 
+  /// Get top 50 locations.
+  static Uri popularLocations() =>
+    Uri.parse('$baseUrl/locations/v1/topcities/50?${ApiKeys.accuweather}&language=fa');
+
   // Home page urls.
   /// Get current weather conditions.
   static Uri currentCondition(String locationKey, {bool details = true, String locale = 'en'}) {

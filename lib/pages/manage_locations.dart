@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:math';
 
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
@@ -15,6 +16,7 @@ import 'package:weather_app/database/entities/saved_location_entity.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
+import 'package:weather_app/models/popular_location.dart';
 import 'package:weather_app/models/search_result_location.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
@@ -33,7 +35,7 @@ late Settings _userSettings;
 
 late TextEditingController _searchTextFieldController;
 
-enum _ListPages { savedLocations, searchResult }
+enum _ListPages { savedLocations, popularLocations, searchResult }
 late PageController _pageController;
 void _jumpToListPage(_ListPages page) => _pageController.jumpToPage(page.index);
 
@@ -41,9 +43,11 @@ void _jumpToListPage(_ListPages page) => _pageController.jumpToPage(page.index);
 // :: For _SavedLocationsList.
 late ValueNotifier<bool> _savedLocationsChangeNotifier;
 void notifySavedLocationsList() => _savedLocationsChangeNotifier.value = !_savedLocationsChangeNotifier.value;
-
 // :: For _SearchResultList.
 late final _SearchResultNotifier _searchChangeNotifier;
+// :: For _PopularLocationsList.
+late final ValueNotifier<List<PopularLocation>> _popularLocationsChangeNotifier;
+void notifyPopularLocationsList(List<PopularLocation> locations) => _popularLocationsChangeNotifier.value = locations;
 
 // ManageLocations page.
 class ManageLocations extends StatelessWidget {
@@ -66,6 +70,7 @@ class ManageLocations extends StatelessWidget {
     _searchTextFieldController = TextEditingController();
     // Create ValueNotifiers.
     _savedLocationsChangeNotifier = ValueNotifier<bool>(false);
+    _popularLocationsChangeNotifier = ValueNotifier<List<PopularLocation>>([]);
     _searchChangeNotifier = _SearchResultNotifier(_SearchResultData());
     return super.createElement();
   }
@@ -90,6 +95,7 @@ class ManageLocations extends StatelessWidget {
                 physics: const NeverScrollableScrollPhysics(),
                 children: const [
                   _SavedLocationsList(),
+                  _PopularLocationsList(),
                   _SearchResultList()
                 ]
               ),
@@ -243,7 +249,8 @@ class TopAppBarState extends State<_TopAppBar> {
         widget.changeBackButtonStatus(true);
         // Set TextField editable.
         _isReadOnly = false;
-        // TODO Go to PopularLocationsList
+        // Jump to _PopularLocationsList.
+        _jumpToListPage(_ListPages.popularLocations);
         // Collapse AppBar.
         setState(() => _isCollapsed = true);
       });
@@ -701,6 +708,129 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
           Future.delayed(const Duration(milliseconds: 200))
             .then((_) => notifySavedLocationsList());
         }
+      }
+    );
+  }
+}
+
+// :: PopularLocationsList
+class _PopularLocationsList extends StatelessWidget {
+  const _PopularLocationsList({Key? key}) : super(key: key);
+
+  /// Build ShimmerList.
+  ShimmerLoading _buildShimmerList() {
+    List<Container> items = [];
+    Random random = Random();
+
+    // Create shimmer items.
+    for(int index = 0; index < 27; index++) {
+      items.add(Container(
+        height: 36.0,
+        width: 63.0 + random.nextInt(87),
+        decoration: BoxDecoration(
+          color: _palette.background,
+          borderRadius: BorderRadius.circular(Dimens.smallShapesBorderRadius)
+        )
+      ));
+    }
+
+    // Create shimmer loading.
+    return ShimmerLoading(
+      child: Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      spacing: 16,
+      runSpacing: 16,
+      children: items
+      )
+    );
+  }
+
+  /// Build popular locations ListView.
+  Wrap _buildWrapOfLocations() {
+    List<InkWell> items = [];
+    bool isEn = _strings.locale == 'en';
+    int citiesCount = _popularLocationsChangeNotifier.value.length;
+    int maxCount = (citiesCount >= 27)? 27 : citiesCount;
+    for(int index = 0; index < maxCount; index++) {
+      PopularLocation pc = _popularLocationsChangeNotifier.value[index];
+      items.add(InkWell(
+        onTap: () {
+          // Get name based on current language.
+          String cityName = (isEn)? pc.nameEn : pc.namePer;
+          // Change SearchBox TextField's text.
+          _searchTextFieldController.text = cityName;
+          // Jump to _SearchResultList.
+          _jumpToListPage(_ListPages.searchResult);
+          // Search selected popular location.
+          _searchChangeNotifier.changeSearchQuery(true, cityName);
+        },
+        child: Container(
+          padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+          decoration: BoxDecoration(
+            color: _palette.border,
+            borderRadius: BorderRadius.circular(Dimens.smallShapesBorderRadius)
+          ),
+          child: Text(
+            (isEn)? pc.nameEn : pc.namePer,
+            style: _types.subtitle1!.apply(color: _palette.onBackground)
+          ),
+        ),
+      ));
+    }
+
+    // Build ListView.
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.start,
+      spacing: 16,
+      runSpacing: 16,
+      children: items
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    // If popular locations list is empty.
+    if (_popularLocationsChangeNotifier.value.isEmpty) {
+      // Send GET popular locations request after check internet connection.
+      Internet.check(context, ifConnected: () => _getPopularLocations(context));
+    }
+
+    return ValueListenableBuilder(
+      valueListenable: _popularLocationsChangeNotifier,
+      builder: (_, __, ___) {
+        return SingleChildScrollView(
+          padding: EdgeInsets.fromLTRB(
+            Dimens.horizontalPadding,
+            Dimens.appbarHeightWithOnlySearchBox + MediaQuery.of(context).viewPadding.top + Dimens.verticalPadding,
+            Dimens.horizontalPadding,
+            Dimens.verticalPadding
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                _strings.popularLocationsTitle,
+                style: _types.subtitle1!.apply(color: _palette.onBackground)
+              ),
+              const SizedBox(height: 24),
+              (_popularLocationsChangeNotifier.value.isEmpty)? _buildShimmerList() : _buildWrapOfLocations()
+            ],
+          )
+        );
+      }
+    );
+  }
+
+  /// Get popular locations from AccuWeather API.
+  void _getPopularLocations(BuildContext context) {
+    // Send GET request.
+    Internet.get(context,
+      uri: Urls.popularLocations(),
+      onResponse: (response) {
+        // Show popular locations.
+        notifyPopularLocationsList(
+          PopularLocation.fromJsonArray(jsonDecode(response.body))
+        );
       }
     );
   }
