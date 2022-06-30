@@ -1,16 +1,19 @@
 import 'package:flutter/cupertino.dart' show CupertinoActivityIndicator;
 import 'package:flutter/material.dart';
+import 'package:location/location.dart';
 import 'package:weather_app/components/blur_container.dart';
 import 'package:weather_app/components/square_image.dart';
 import 'package:weather_app/components/top_app_bar.dart';
 import 'package:weather_app/database/database.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
+import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
 import 'package:weather_app/res/dimens.dart';
 import 'package:weather_app/res/themes.dart';
 import 'package:weather_app/res/types.dart';
+import 'package:weather_app/res/urls.dart';
 import 'package:weather_app/router.dart';
 
 late ColorScheme _palette;
@@ -21,6 +24,7 @@ late Settings _userSettings;
 
 late final TextEditingController _searchTextFieldController;
 
+// ManageLocations page.
 class ManageLocations extends StatelessWidget {
   final void Function(AppRoutePath routePath) navigateTo;
   final void Function(bool isDisabled) changeBackButtonStatus;
@@ -69,6 +73,7 @@ class ManageLocations extends StatelessWidget {
   }
 }
 
+// :: TopAppBar widget.
 class _TopAppBar extends StatefulWidget {
   final void Function(AppRoutePath routePath) navigateTo;
   final void Function(bool isDisabled) changeBackButtonStatus;
@@ -90,7 +95,21 @@ class TopAppBarState extends State<_TopAppBar> {
   // Call when back button pressed. (TopAppBar/NavigationBar back button)
   void onBackPressed() {
     if(_isCollapsed) {
-      setState(() => _isCollapsed = false);
+      // Disable NavigationBar back button.
+      widget.changeBackButtonStatus(false);
+      // Clear SearchBox TextField.
+      _searchTextFieldController.clear();
+      // Clear SearchBox TextField focus.
+      FocusManager.instance.primaryFocus?.unfocus();
+      // TODO Go to SavedCitiesList.
+      // Reset all states.
+      setState(() {
+        _isCollapsed = false;
+        _isOnError = false;
+        _isOnLoadUserLocation = false;
+      });
+    } else {
+      // TODO Navigate to Home page.
     }
   }
 
@@ -134,10 +153,17 @@ class TopAppBarState extends State<_TopAppBar> {
   InkWell _buildPrimaryButton() => InkWell(
     onTap: () {
       if(!_isOnLoadUserLocation) {
-        // TODO Search location.
-        setState(() => _isOnLoadUserLocation = true);
-      } else {
-        // TODO Get user location.
+        if(_isCollapsed) {
+          if(_searchTextFieldController.text.isNotEmpty) {
+            // TODO Search location name.
+            // TODO Go to SearchResultList.
+          } else {
+            setState(() => _isOnError = true);
+          }
+        } else {
+          // Check Internet then get user location.
+          Internet.check(context, ifConnected: () => _getUserLocation(context));
+        }
       }
     },
     borderRadius: BorderRadius.circular(Dimens.mediumShapesBorderRadius),
@@ -154,13 +180,15 @@ class TopAppBarState extends State<_TopAppBar> {
   );
 
   // :: Build textField.
-  TextField _buildTextField() => TextField(
+  TextField _buildTextField(BuildContext context) => TextField(
     controller: _searchTextFieldController,
     style: _types.subtitle1!.apply(color: _palette.onBackground),
     onTap: () {
-      widget.changeBackButtonStatus(true);
-      // TODO Go to PopularLocationsList
-      setState(() => _isCollapsed = true);
+      Internet.check(context, ifConnected: () {
+        widget.changeBackButtonStatus(true);
+        // TODO Go to PopularLocationsList
+        setState(() => _isCollapsed = true);
+      });
     },
     onChanged: (text) {
       if(_isOnError && text.isNotEmpty) {
@@ -193,7 +221,7 @@ class TopAppBarState extends State<_TopAppBar> {
     ),
   );
   // :: Build SearchBox.
-  Container _buildSearchBox() => Container(
+  Container _buildSearchBox(BuildContext context) => Container(
     decoration: BoxDecoration(
       color: _palette.textFieldBackground,
       borderRadius: BorderRadius.circular(Dimens.mediumShapesBorderRadius),
@@ -201,7 +229,7 @@ class TopAppBarState extends State<_TopAppBar> {
     ),
     child: Row(
       children: [
-        Expanded(child: _buildTextField()),
+        Expanded(child: _buildTextField(context)),
         _buildPrimaryButton()
       ],
     ),
@@ -254,11 +282,61 @@ class TopAppBarState extends State<_TopAppBar> {
           Row(
             children: [
               _buildBackButton(context),
-              Expanded(child: _buildSearchBox())
-            ],
+              Expanded(child: _buildSearchBox(context))
+            ]
           )
         ]
       )
     );
+  }
+
+  /// Get user location using Location Service.
+  void _getUserLocation(BuildContext context) async {
+    Location location = Location();
+
+    // :: Check for location service.
+    bool serviceEnabled = await location.serviceEnabled();
+    if (!serviceEnabled) {
+      serviceEnabled = await location.requestService();
+      if (!serviceEnabled) { return; }
+    }
+
+    // :: Check for user permission.
+    PermissionStatus permissionStatus = await location.hasPermission();
+    if (permissionStatus == PermissionStatus.denied) {
+      permissionStatus = await location.requestPermission();
+      if (permissionStatus == PermissionStatus.denied) { return; }
+    }
+
+    // :: Change pageView to _SearchResultList.
+    // TODO Go to SearchResultList.
+
+    // :: Active loading state.
+    setState(() {
+      _isCollapsed = true;
+      _isOnLoadUserLocation = true;
+    });
+
+    // :: Get location data and send latitude and longitude to AccuWeather server.
+    location.getLocation().then((locationData) {
+      Internet.get(
+        context,
+        uri: Urls.searchLocationByData(locationData, locale: _strings.locale),
+        onCompleted: (isOkay) {
+          // TODO Show empty search list if its NOT OKAY.
+          // Deactivate loading state.
+          setState(() => _isOnLoadUserLocation = false);
+        },
+        onRetry: () {
+          // Activate loading state.
+          setState(() => _isOnLoadUserLocation = true);
+        },
+        onResponse: (locationResponse) {
+          // TODO Convert json to FoundedLocation object.
+          // TODO Set SearchBox text field to location name.
+          // TODO Notify SearchResultList.
+        }
+      );
+    });
   }
 }
