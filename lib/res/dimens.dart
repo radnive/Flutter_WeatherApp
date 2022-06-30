@@ -11,6 +11,8 @@ class Dimens {
   static const double topAppbarButtonSize = 40;
   static const double topAppbarButtonIconSize = 24;
   static const double topAppbarHeight = (topAppbarButtonSize + topAppbarTopPadding + topAppbarBottomPadding);
+  static const double appbarHeightWithChild = (topAppbarHeight + searchBoxBackButtonSize + topAppbarTopPadding + 14);
+  static const double appbarHeightWithOnlySearchBox = (searchBoxBackButtonSize + topAppbarTopPadding + topAppbarBottomPadding);
 
   // :: BlurContainer
   static const double blurContainerSigma = 5;

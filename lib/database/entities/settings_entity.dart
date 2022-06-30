@@ -8,7 +8,8 @@ enum TemperatureUnit {
   final String text;
   const TemperatureUnit(this.text);
   factory TemperatureUnit.get(int index) => TemperatureUnit.values[index];
-  static bool isMetric(int index) => index == 0;
+  static bool isItMetric(int index) => index == 0;
+  bool get isMetric => index == 0;
 }
 
 enum WindSpeedUnit {

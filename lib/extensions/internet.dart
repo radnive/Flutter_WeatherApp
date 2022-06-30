@@ -9,13 +9,21 @@ class Internet {
   static int okayStatusCode = 200;
   static int exceededRequestNumberStatusCode = 503;
 
+  /// Check internet connection asynchronous.
   static Future<bool> checkAsync() async {
     return await Connectivity().checkConnectivity() != ConnectivityResult.none;
   }
 
-  static void check(BuildContext context, {void Function()? ifConnected}) {
+  /// Check internet connection.
+  static void check(BuildContext context, {
+    void Function()? ifConnected,
+    void Function()? onError
+  }) {
     Connectivity().checkConnectivity().then((result) {
       if (result == ConnectivityResult.none) {
+        // Call on error method.
+        if(onError != null) onError();
+
         // Get Strings resource.
         final strings = S.of(context);
 
@@ -34,6 +42,7 @@ class Internet {
     });
   }
 
+  /// Open url in browser.
   static void openUrl(BuildContext context, {required String url, void Function()? onError}) async {
     try {
       await launchUrl(Uri.parse(url), mode: LaunchMode.externalApplication);

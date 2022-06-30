@@ -28,4 +28,15 @@ class Urls {
     // Create Uri.
     return Uri.parse('$baseUrl/locations/v1/cities/geoposition/search?${ApiKeys.accuweather}&q=$geoLocation$lang');
   }
+
+  // Home page urls.
+  /// Get current weather conditions.
+  static Uri currentCondition(String locationKey, {bool details = true, String locale = 'en'}) {
+    // Check for language.
+    final String lang = (locale != 'en')? '&language=$locale' : '';
+    // Check for details.
+    final String getDetails = (details)? 'details=true' : '';
+    // Create Uri.
+    return Uri.parse('$baseUrl/currentconditions/v1/$locationKey?${ApiKeys.accuweather}$lang$getDetails');
+  }
 }

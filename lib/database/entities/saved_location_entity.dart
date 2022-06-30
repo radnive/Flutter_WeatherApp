@@ -16,7 +16,8 @@ class SavedLocation {
   String countryEn;
   double latitude;
   double longitude;
-  int temperature;
+  double temperatureC;
+  double temperatureF;
   DateTime lastUpdate;
   bool isPinned;
   String get addressPer => '$countryPer, $provincePer';
@@ -26,6 +27,8 @@ class SavedLocation {
   String getName(String locale) => (locale == 'en')? nameEn : namePer;
   /// Get address of SavedLocation based on current app language.
   String getAddress(String locale) => (locale == 'en')? addressEn : addressPer;
+  /// Get saved temperature.
+  int getTemperature(bool isMetric) => ((isMetric)? temperatureC : temperatureF).toInt();
 
   /// Check that is temperature up to date or not.
   bool get isUpToDate => DateTime.now().difference(lastUpdate).inHours <= 1;
@@ -42,7 +45,8 @@ class SavedLocation {
     this.countryEn = '',
     this.latitude = 0,
     this.longitude = 0,
-    this.temperature = 0,
+    this.temperatureC = 0,
+    this.temperatureF = 0,
     required this.lastUpdate,
     this.isPinned = false
   });
@@ -63,11 +67,13 @@ class SavedLocation {
 
   /// Apply change on current SavedLocation object.
   SavedLocation apply({
-    int? temperature,
+    double? temperatureC,
+    double? temperatureF,
     DateTime? lastUpdate,
     bool? isPinned
   }) {
-    if (temperature != null) { this.temperature = temperature; }
+    if (temperatureC != null) { this.temperatureC = temperatureC; }
+    if (temperatureF != null) { this.temperatureF = temperatureF; }
     if (lastUpdate != null) { this.lastUpdate = lastUpdate; }
     if (isPinned != null) { this.isPinned = isPinned; }
     return this;
@@ -111,7 +117,7 @@ class SavedLocation {
   void update(Database db) => db.store.box<SavedLocation>().put(this);
 
   /// Remove SavedLocation from database.
-  void remove(Database db, {bool isPinned = false}) {
+  void remove(Database db) {
     db.store.box<SavedLocation>().remove(id);
     if(isPinned) {
       if(!isCollectionEmpty(db)) {
