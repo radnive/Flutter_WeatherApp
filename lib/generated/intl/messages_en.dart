@@ -20,9 +20,9 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(cityName) => "${cityName} air quality is ";
+  static String m0(locationName) => "${locationName} air quality is ";
 
-  static String m1(cityName) => "Unable to add \"${cityName}\"";
+  static String m1(name) => "Unable to add \"${name}\"";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -39,20 +39,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "autoUpdateItemText":
             MessageLookupByLibrary.simpleMessage("Automatic update"),
         "cancelButtonText": MessageLookupByLibrary.simpleMessage("Cancel"),
-        "cityNotFoundMessageSubtitle": MessageLookupByLibrary.simpleMessage(
-            "There is no city with this name in the world."),
-        "cityNotFoundMessageTitle":
-            MessageLookupByLibrary.simpleMessage("Nothing Founded!"),
         "communicationSettingsTitle":
             MessageLookupByLibrary.simpleMessage("COMMUNICATION"),
-        "confirmDeleteMessageSubtitle": MessageLookupByLibrary.simpleMessage(
-            "If you are not sure, swipe to the right."),
-        "confirmDeleteMessageTitle":
-            MessageLookupByLibrary.simpleMessage("Are you sure?"),
         "confirmExitMessageSubtitle": MessageLookupByLibrary.simpleMessage(
             "If you don\'t want it, swipe to the right."),
         "confirmExitMessageTitle": MessageLookupByLibrary.simpleMessage(
             "Do you want to close the app?"),
+        "confirmMessageSubtitle": MessageLookupByLibrary.simpleMessage(
+            "If you are not sure, swipe to the right."),
+        "confirmMessageTitle":
+            MessageLookupByLibrary.simpleMessage("Are you sure?"),
         "contactMeBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
             "How do you want to contact me?"),
         "contactMeChoiceSubtitles":
@@ -65,6 +61,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Let\'s add your favorite locations."),
         "emptyListMessageTitle":
             MessageLookupByLibrary.simpleMessage("The List Is Empty!"),
+        "emptySearchBoxErrorMessageSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "The location text field can\'t be empty."),
+        "emptySearchBoxErrorMessageTitle":
+            MessageLookupByLibrary.simpleMessage("You missed something!"),
         "feedbackBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
             "How do you feel about Weather App?"),
         "feedbackItemText": MessageLookupByLibrary.simpleMessage("Feedback"),
@@ -82,10 +83,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "languagesChoiceTitles":
             MessageLookupByLibrary.simpleMessage("Persian,English"),
         "locale": MessageLookupByLibrary.simpleMessage("en"),
-        "manageCitiesSubtitle":
-            MessageLookupByLibrary.simpleMessage("Add or remove cities."),
-        "manageCitiesTitle":
-            MessageLookupByLibrary.simpleMessage("Manage Cities"),
+        "locationNotFoundMessageSubtitle": MessageLookupByLibrary.simpleMessage(
+            "There is no location with this name in the world."),
+        "locationNotFoundMessageTitle":
+            MessageLookupByLibrary.simpleMessage("Nothing Founded!"),
+        "manageLocationsSubtitle":
+            MessageLookupByLibrary.simpleMessage("Add or remove Locations."),
+        "manageLocationsTitle":
+            MessageLookupByLibrary.simpleMessage("Manage Locations"),
         "months": MessageLookupByLibrary.simpleMessage(
             "January,February,March,April,May,June,July,August,September,October,November,December"),
         "next12DaysForecastButtonText":
@@ -103,8 +108,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("OTHER SETTINGS"),
         "pinButtonText": MessageLookupByLibrary.simpleMessage("Pin It"),
         "pinnedTagText": MessageLookupByLibrary.simpleMessage("Pinned"),
-        "popularCitiesTitle":
-            MessageLookupByLibrary.simpleMessage("Popular Cities"),
+        "popularLocationsTitle":
+            MessageLookupByLibrary.simpleMessage("Popular Locations"),
         "privacyPolicyItemText":
             MessageLookupByLibrary.simpleMessage("Privacy Policy"),
         "refreshIndicatorErrorMessage": MessageLookupByLibrary.simpleMessage(
@@ -134,7 +139,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "requestsNumberErrorMessageTitle": MessageLookupByLibrary.simpleMessage(
             "The server does not response!"),
         "retryButtonText": MessageLookupByLibrary.simpleMessage("Retry"),
-        "searchCityTextFieldHint":
+        "searchLocationTextFieldHint":
             MessageLookupByLibrary.simpleMessage("Enter location"),
         "settingsSubtitle":
             MessageLookupByLibrary.simpleMessage("Customize the app."),
@@ -162,7 +167,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Auto,Light,Dark"),
         "themeItemText": MessageLookupByLibrary.simpleMessage("Theme"),
         "tomorrowText": MessageLookupByLibrary.simpleMessage("Tomorrow"),
-        "unableToAddCityErrorMessage": m1,
+        "unableToAddLocationErrorMessage": m1,
         "unavailableText": MessageLookupByLibrary.simpleMessage("Unavailable"),
         "unitsSettingsTitle": MessageLookupByLibrary.simpleMessage("UNITS"),
         "uvIndexTitle": MessageLookupByLibrary.simpleMessage("UV INDEX"),

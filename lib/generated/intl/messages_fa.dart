@@ -20,7 +20,9 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'fa';
 
-  static String m0(cityName) => "کیفیت هوای ${cityName} ";
+  static String m0(locationName) => "کیفیت هوای ${locationName} ";
+
+  static String m1(name) => "نمی توان \"${name}\" را اضافه کرد.";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -38,20 +40,16 @@ class MessageLookup extends MessageLookupByLibrary {
         "autoUpdateItemText":
             MessageLookupByLibrary.simpleMessage("بروزرسانی خودکار"),
         "cancelButtonText": MessageLookupByLibrary.simpleMessage("بی خیال!"),
-        "cityNotFoundMessageSubtitle": MessageLookupByLibrary.simpleMessage(
-            "هیچ شهری با این نام در دنیا وجود ندارد."),
-        "cityNotFoundMessageTitle":
-            MessageLookupByLibrary.simpleMessage("چیزی پیدا نشد!"),
         "communicationSettingsTitle":
             MessageLookupByLibrary.simpleMessage("راه های ارتباطی"),
-        "confirmDeleteMessageSubtitle": MessageLookupByLibrary.simpleMessage(
-            "اگر اطمینان ندارید، به سمت راست بکشید."),
-        "confirmDeleteMessageTitle":
-            MessageLookupByLibrary.simpleMessage("آیا مطمئن هستید؟"),
         "confirmExitMessageSubtitle": MessageLookupByLibrary.simpleMessage(
             "اگر این را نمی خواهید، به سمت راست بکشید."),
         "confirmExitMessageTitle": MessageLookupByLibrary.simpleMessage(
             "آیا میخواهید از برنامه خارج شوید؟"),
+        "confirmMessageSubtitle": MessageLookupByLibrary.simpleMessage(
+            "اگر اطمینان ندارید، به سمت راست بکشید."),
+        "confirmMessageTitle":
+            MessageLookupByLibrary.simpleMessage("آیا مطمئن هستید؟"),
         "contactMeBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
             "چطوری میخوای با من ارتباط بگیری؟"),
         "contactMeChoiceSubtitles":
@@ -62,9 +60,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "developerItemText":
             MessageLookupByLibrary.simpleMessage("طراحی و توسعه یافته توسط "),
         "emptyListMessageSubtitle": MessageLookupByLibrary.simpleMessage(
-            "بزن بریم شهر مورد علاقه ات رو اضافه کنیم."),
+            "بزن بریم مکان مورد علاقه ات رو اضافه کنیم."),
         "emptyListMessageTitle":
             MessageLookupByLibrary.simpleMessage("لیست خالی است!"),
+        "emptySearchBoxErrorMessageSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "فیلد نام مکان نمی تواند خالی باشد."),
+        "emptySearchBoxErrorMessageTitle": MessageLookupByLibrary.simpleMessage(
+            "یک مورد چیزی را فراموش کردید!"),
         "feedbackBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
             "احساست نسبت به این اپلیکیشن چیست؟"),
         "feedbackItemText": MessageLookupByLibrary.simpleMessage("ثبت بازخورد"),
@@ -82,10 +85,14 @@ class MessageLookup extends MessageLookupByLibrary {
         "languagesChoiceTitles":
             MessageLookupByLibrary.simpleMessage("پارسی,انگلیسی"),
         "locale": MessageLookupByLibrary.simpleMessage("fa"),
-        "manageCitiesSubtitle":
-            MessageLookupByLibrary.simpleMessage("شهر ها رو اضافه یا حذف کن."),
-        "manageCitiesTitle":
-            MessageLookupByLibrary.simpleMessage("مدیریت شهر ها"),
+        "locationNotFoundMessageSubtitle": MessageLookupByLibrary.simpleMessage(
+            "هیچ مکانی با این نام در دنیا وجود ندارد."),
+        "locationNotFoundMessageTitle":
+            MessageLookupByLibrary.simpleMessage("چیزی پیدا نشد!"),
+        "manageLocationsSubtitle":
+            MessageLookupByLibrary.simpleMessage("مکان ها رو اضافه یا حذف کن."),
+        "manageLocationsTitle":
+            MessageLookupByLibrary.simpleMessage("مدیریت مکان ها"),
         "months": MessageLookupByLibrary.simpleMessage(
             "ژانویه,فوریه,مارس,آوریل,مه,ژوئن,جولای,آگوست,سپتامبر,اکتبر,نوامبر,دسامبر"),
         "next12DaysForecastButtonText":
@@ -103,8 +110,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("سایر تنظیمات"),
         "pinButtonText": MessageLookupByLibrary.simpleMessage("سنجاق"),
         "pinnedTagText": MessageLookupByLibrary.simpleMessage("سنجاق شده"),
-        "popularCitiesTitle":
-            MessageLookupByLibrary.simpleMessage("شهر های پر بازدید"),
+        "popularLocationsTitle":
+            MessageLookupByLibrary.simpleMessage("مکان های پر بازدید"),
         "privacyPolicyItemText":
             MessageLookupByLibrary.simpleMessage("سیاست حفظ حریم خصوصی"),
         "refreshIndicatorErrorMessage": MessageLookupByLibrary.simpleMessage(
@@ -134,7 +141,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "requestsNumberErrorMessageTitle":
             MessageLookupByLibrary.simpleMessage("سرور پاسخ نمیدهد!"),
         "retryButtonText": MessageLookupByLibrary.simpleMessage("تلاش مجدد"),
-        "searchCityTextFieldHint":
+        "searchLocationTextFieldHint":
             MessageLookupByLibrary.simpleMessage("نام مکان رو وارد کن"),
         "settingsSubtitle":
             MessageLookupByLibrary.simpleMessage("اپلیکیشن رو شخصی سازی کن."),
@@ -162,6 +169,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("خودکار,روشن,تاریک"),
         "themeItemText": MessageLookupByLibrary.simpleMessage("ظاهر برنامه"),
         "tomorrowText": MessageLookupByLibrary.simpleMessage("فردا"),
+        "unableToAddLocationErrorMessage": m1,
         "unavailableText":
             MessageLookupByLibrary.simpleMessage("خارج از دسترس"),
         "unitsSettingsTitle":

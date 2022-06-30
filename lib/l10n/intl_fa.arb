@@ -7,18 +7,19 @@
   "requestsNumberErrorMessageSubtitle" : "تعداد درخواست ها بیش از حد مجاز شده است.",
   "noInternetErrorMessageTitle": "اتصال به اینترنت برقرار نیست!",
   "noInternetErrorMessageSubtitle": "لطفا وضعیت اینترنت خود را بررسی کنید.",
-  "confirmDeleteMessageTitle": "آیا مطمئن هستید؟",
-  "confirmDeleteMessageSubtitle": "اگر اطمینان ندارید، به سمت راست بکشید.",
+  "confirmMessageTitle": "آیا مطمئن هستید؟",
+  "confirmMessageSubtitle": "اگر اطمینان ندارید، به سمت راست بکشید.",
   "confirmExitMessageTitle": "آیا میخواهید از برنامه خارج شوید؟",
   "confirmExitMessageSubtitle": "اگر این را نمی خواهید، به سمت راست بکشید.",
-  "yesButtonText": "بله",
   "somethingWentWrongTitle": "مشکلی پیش آمده است!",
   "somethingWentWrongSubtitle": "در حال حاضر ارتباط با سرور انجام نمی شود.",
-  "unableToAddCityErrorMessageSubtitle": "نمی توان \"{cityName}\" را اضافه کرد.",
-  "@unableToAddCityErrorMessage": {
+  "emptySearchBoxErrorMessageTitle": "یک مورد چیزی را فراموش کردید!",
+  "emptySearchBoxErrorMessageSubtitle": "فیلد نام مکان نمی تواند خالی باشد.",
+  "unableToAddLocationErrorMessage": "نمی توان \"{name}\" را اضافه کرد.",
+  "@unableToAddLocationErrorMessage": {
     "type": "text",
     "placeholders": {
-      "cityName": {
+      "name": {
         "type": "String"
       }
     }
@@ -42,11 +43,11 @@
   "sunriseText": "طلوع",
   "sunsetText": "غروب",
   "airQualityIndexTitle": "شاخص کیفیت هوا",
-  "airQualityIndexSubtitle": "کیفیت هوای {cityName} ",
+  "airQualityIndexSubtitle": "کیفیت هوای {locationName} ",
   "@airQualityIndexSubtitle": {
     "type": "text",
     "placeholders": {
-      "cityName": {
+      "locationName": {
         "type": "String"
       }
     }
@@ -62,20 +63,21 @@
   "weekDays": "دوشنبه,سه شنبه,چهارشنبه,پنجشنبه,جمعه,شنبه,یکشنبه",
   "months": "ژانویه,فوریه,مارس,آوریل,مه,ژوئن,جولای,آگوست,سپتامبر,اکتبر,نوامبر,دسامبر",
 
-  "manageCitiesTitle": "مدیریت شهر ها",
-  "popularCitiesTitle": "شهر های پر بازدید",
-  "manageCitiesSubtitle": "شهر ها رو اضافه یا حذف کن.",
-  "searchCityTextFieldHint": "نام مکان رو وارد کن",
+  "manageLocationsTitle": "مدیریت مکان ها",
+  "manageLocationsSubtitle": "مکان ها رو اضافه یا حذف کن.",
+  "popularLocationsTitle": "مکان های پر بازدید",
+  "searchLocationTextFieldHint": "نام مکان رو وارد کن",
   "pinButtonText": "سنجاق",
   "pinnedTagText": "سنجاق شده",
+  "yesButtonText": "بله",
   "deleteButtonText": "حذف",
   "addedButtonText": "اضافه شده",
   "okayButtonText": "باشه",
   "retryButtonText": "تلاش مجدد",
-  "cityNotFoundMessageTitle": "چیزی پیدا نشد!",
-  "cityNotFoundMessageSubtitle": "هیچ شهری با این نام در دنیا وجود ندارد.",
+  "locationNotFoundMessageTitle": "چیزی پیدا نشد!",
+  "locationNotFoundMessageSubtitle": "هیچ مکانی با این نام در دنیا وجود ندارد.",
   "emptyListMessageTitle": "لیست خالی است!",
-  "emptyListMessageSubtitle": "بزن بریم شهر مورد علاقه ات رو اضافه کنیم.",
+  "emptyListMessageSubtitle": "بزن بریم مکان مورد علاقه ات رو اضافه کنیم.",
 
   "settingsTitle": "تنظیمات",
   "settingsSubtitle": "اپلیکیشن رو شخصی سازی کن.",

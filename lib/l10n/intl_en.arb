@@ -7,18 +7,19 @@
   "requestsNumberErrorMessageSubtitle" : "The number of requests exceeded.",
   "noInternetErrorMessageTitle": "No internet connection!",
   "noInternetErrorMessageSubtitle": "Please check your internet connection.",
-  "confirmDeleteMessageTitle": "Are you sure?",
-  "confirmDeleteMessageSubtitle": "If you are not sure, swipe to the right.",
+  "confirmMessageTitle": "Are you sure?",
+  "confirmMessageSubtitle": "If you are not sure, swipe to the right.",
   "confirmExitMessageTitle": "Do you want to close the app?",
   "confirmExitMessageSubtitle": "If you don't want it, swipe to the right.",
-  "yesButtonText": "Yes",
   "somethingWentWrongTitle": "Something went wrong!",
   "somethingWentWrongSubtitle": "We can't connect to server.",
-  "unableToAddCityErrorMessage": "Unable to add \"{cityName}\"",
-  "@unableToAddCityErrorMessage": {
+  "emptySearchBoxErrorMessageTitle": "You missed something!",
+  "emptySearchBoxErrorMessageSubtitle": "The location text field can't be empty.",
+  "unableToAddLocationErrorMessage": "Unable to add \"{name}\"",
+  "@unableToAddLocationErrorMessage": {
     "type": "text",
     "placeholders": {
-      "cityName": {
+      "name": {
         "type": "String"
       }
     }
@@ -42,11 +43,11 @@
   "sunriseText": "Sunrise",
   "sunsetText": "Sunset",
   "airQualityIndexTitle": "Air Quality Index",
-  "airQualityIndexSubtitle": "{cityName} air quality is ",
+  "airQualityIndexSubtitle": "{locationName} air quality is ",
   "@airQualityIndexSubtitle": {
     "type": "text",
     "placeholders": {
-      "cityName": {
+      "locationName": {
         "type": "String"
       }
     }
@@ -62,18 +63,19 @@
   "weekDays": "Monday,Tuesday,Wednesday,Thursday,Friday,Saturday,Sunday",
   "months": "January,February,March,April,May,June,July,August,September,October,November,December",
 
-  "manageCitiesTitle": "Manage Cities",
-  "popularCitiesTitle": "Popular Cities",
-  "manageCitiesSubtitle": "Add or remove cities.",
-  "searchCityTextFieldHint": "Enter location",
+  "manageLocationsTitle": "Manage Locations",
+  "manageLocationsSubtitle": "Add or remove Locations.",
+  "popularLocationsTitle": "Popular Locations",
+  "searchLocationTextFieldHint": "Enter location",
   "pinButtonText": "Pin It",
   "pinnedTagText": "Pinned",
+  "yesButtonText": "Yes",
   "deleteButtonText": "Delete",
   "addedButtonText": "Added",
   "okayButtonText": "Okay",
   "retryButtonText": "Retry",
-  "cityNotFoundMessageTitle": "Nothing Founded!",
-  "cityNotFoundMessageSubtitle": "There is no city with this name in the world.",
+  "locationNotFoundMessageTitle": "Nothing Founded!",
+  "locationNotFoundMessageSubtitle": "There is no location with this name in the world.",
   "emptyListMessageTitle": "The List Is Empty!",
   "emptyListMessageSubtitle": "Let's add your favorite locations.",
 

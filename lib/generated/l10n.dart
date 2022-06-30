@@ -121,20 +121,20 @@ class S {
   }
 
   /// `Are you sure?`
-  String get confirmDeleteMessageTitle {
+  String get confirmMessageTitle {
     return Intl.message(
       'Are you sure?',
-      name: 'confirmDeleteMessageTitle',
+      name: 'confirmMessageTitle',
       desc: '',
       args: [],
     );
   }
 
   /// `If you are not sure, swipe to the right.`
-  String get confirmDeleteMessageSubtitle {
+  String get confirmMessageSubtitle {
     return Intl.message(
       'If you are not sure, swipe to the right.',
-      name: 'confirmDeleteMessageSubtitle',
+      name: 'confirmMessageSubtitle',
       desc: '',
       args: [],
     );
@@ -160,16 +160,6 @@ class S {
     );
   }
 
-  /// `Yes`
-  String get yesButtonText {
-    return Intl.message(
-      'Yes',
-      name: 'yesButtonText',
-      desc: '',
-      args: [],
-    );
-  }
-
   /// `Something went wrong!`
   String get somethingWentWrongTitle {
     return Intl.message(
@@ -190,13 +180,33 @@ class S {
     );
   }
 
-  /// `Unable to add "{cityName}"`
-  String unableToAddCityErrorMessage(String cityName) {
+  /// `You missed something!`
+  String get emptySearchBoxErrorMessageTitle {
     return Intl.message(
-      'Unable to add "$cityName"',
-      name: 'unableToAddCityErrorMessage',
+      'You missed something!',
+      name: 'emptySearchBoxErrorMessageTitle',
       desc: '',
-      args: [cityName],
+      args: [],
+    );
+  }
+
+  /// `The location text field can't be empty.`
+  String get emptySearchBoxErrorMessageSubtitle {
+    return Intl.message(
+      'The location text field can\'t be empty.',
+      name: 'emptySearchBoxErrorMessageSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to add "{name}"`
+  String unableToAddLocationErrorMessage(String name) {
+    return Intl.message(
+      'Unable to add "$name"',
+      name: 'unableToAddLocationErrorMessage',
+      desc: '',
+      args: [name],
     );
   }
 
@@ -370,13 +380,13 @@ class S {
     );
   }
 
-  /// `{cityName} air quality is `
-  String airQualityIndexSubtitle(String cityName) {
+  /// `{locationName} air quality is `
+  String airQualityIndexSubtitle(String locationName) {
     return Intl.message(
-      '$cityName air quality is ',
+      '$locationName air quality is ',
       name: 'airQualityIndexSubtitle',
       desc: '',
-      args: [cityName],
+      args: [locationName],
     );
   }
 
@@ -480,41 +490,41 @@ class S {
     );
   }
 
-  /// `Manage Cities`
-  String get manageCitiesTitle {
+  /// `Manage Locations`
+  String get manageLocationsTitle {
     return Intl.message(
-      'Manage Cities',
-      name: 'manageCitiesTitle',
+      'Manage Locations',
+      name: 'manageLocationsTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Popular Cities`
-  String get popularCitiesTitle {
+  /// `Add or remove Locations.`
+  String get manageLocationsSubtitle {
     return Intl.message(
-      'Popular Cities',
-      name: 'popularCitiesTitle',
+      'Add or remove Locations.',
+      name: 'manageLocationsSubtitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Add or remove cities.`
-  String get manageCitiesSubtitle {
+  /// `Popular Locations`
+  String get popularLocationsTitle {
     return Intl.message(
-      'Add or remove cities.',
-      name: 'manageCitiesSubtitle',
+      'Popular Locations',
+      name: 'popularLocationsTitle',
       desc: '',
       args: [],
     );
   }
 
   /// `Enter location`
-  String get searchCityTextFieldHint {
+  String get searchLocationTextFieldHint {
     return Intl.message(
       'Enter location',
-      name: 'searchCityTextFieldHint',
+      name: 'searchLocationTextFieldHint',
       desc: '',
       args: [],
     );
@@ -535,6 +545,16 @@ class S {
     return Intl.message(
       'Pinned',
       name: 'pinnedTagText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yes`
+  String get yesButtonText {
+    return Intl.message(
+      'Yes',
+      name: 'yesButtonText',
       desc: '',
       args: [],
     );
@@ -581,20 +601,20 @@ class S {
   }
 
   /// `Nothing Founded!`
-  String get cityNotFoundMessageTitle {
+  String get locationNotFoundMessageTitle {
     return Intl.message(
       'Nothing Founded!',
-      name: 'cityNotFoundMessageTitle',
+      name: 'locationNotFoundMessageTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `There is no city with this name in the world.`
-  String get cityNotFoundMessageSubtitle {
+  /// `There is no location with this name in the world.`
+  String get locationNotFoundMessageSubtitle {
     return Intl.message(
-      'There is no city with this name in the world.',
-      name: 'cityNotFoundMessageSubtitle',
+      'There is no location with this name in the world.',
+      name: 'locationNotFoundMessageSubtitle',
       desc: '',
       args: [],
     );

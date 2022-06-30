@@ -19,10 +19,10 @@ class Types {
   static TextStyle introPageText = const TextStyle(fontWeight: FontWeight.w700, fontSize: 48);
   static TextStyle currentTemperature = const TextStyle(fontWeight: FontWeight.w700, fontSize: 88);
   static TextStyle aqiValue = const TextStyle(fontWeight: FontWeight.w600, fontSize: 30);
-  static TextStyle addedCityTemperature = const TextStyle(fontWeight: FontWeight.w600, fontSize: 45);
+  static TextStyle savedLocationTemperature = const TextStyle(fontWeight: FontWeight.w600, fontSize: 45);
   static TextStyle multiSelectItemText = const TextStyle(fontWeight: FontWeight.w600, fontSize: 24);
   static TextStyle messageTitle = const TextStyle(fontWeight: FontWeight.w600, fontSize: 20);
-  static TextStyle foundedCityTitle = const TextStyle(fontWeight: FontWeight.w500, fontSize: 18);
+  static TextStyle foundedLocationTitle = const TextStyle(fontWeight: FontWeight.w500, fontSize: 18);
 
   // Create TextTheme.
   static TextTheme get textTheme => ThemeData().textTheme.copyWith(
@@ -50,8 +50,8 @@ extension TextThemeExtension on TextTheme {
   TextStyle get introPageText => Types.introPageText;
   TextStyle get currentTemperature => Types.currentTemperature;
   TextStyle get aqiValue => Types.aqiValue;
-  TextStyle get addedCityTemperature => Types.addedCityTemperature;
+  TextStyle get savedLocationTemperature => Types.savedLocationTemperature;
   TextStyle get multiSelectItemText => Types.multiSelectItemText;
   TextStyle get messageTitle => Types.messageTitle;
-  TextStyle get foundedCityTitle => Types.foundedCityTitle;
+  TextStyle get foundedLocationTitle => Types.foundedLocationTitle;
 }
