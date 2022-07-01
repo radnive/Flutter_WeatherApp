@@ -163,7 +163,7 @@ class SettingsPageState extends State<SettingsPage> {
                     ),
                     _TextSettingItem(
                         title: _strings.developerItemText,
-                        text: 'Radnive'
+                        text: _strings.developerName
                     ),
                     _TextSettingItem(
                         title: _strings.weatherDataProviderItemText,

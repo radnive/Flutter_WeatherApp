@@ -57,6 +57,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteButtonText": MessageLookupByLibrary.simpleMessage("Delete"),
         "developerItemText":
             MessageLookupByLibrary.simpleMessage("Designed and developed by "),
+        "developerName": MessageLookupByLibrary.simpleMessage("Radnive"),
         "emptyListMessageSubtitle": MessageLookupByLibrary.simpleMessage(
             "Let\'s add your favorite locations."),
         "emptyListMessageTitle":

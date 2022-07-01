@@ -1493,10 +1493,10 @@ class _DeveloperIntro extends StatelessWidget {
               style: _types.caption!.apply(color: _palette.subtitle)
             ),
             TextSpan(
-              text: 'Radnive',
+              text: _strings.developerName,
               style: _types.caption!.copyWith(
-                  color: _palette.onBackground,
-                  fontWeight: FontWeight.w700
+                color: _palette.onBackground,
+                fontWeight: FontWeight.w700
               )
             )
           ]

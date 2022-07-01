@@ -820,6 +820,16 @@ class S {
     );
   }
 
+  /// `Radnive`
+  String get developerName {
+    return Intl.message(
+      'Radnive',
+      name: 'developerName',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Weather data provider`
   String get weatherDataProviderItemText {
     return Intl.message(

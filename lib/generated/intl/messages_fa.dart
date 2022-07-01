@@ -59,6 +59,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteButtonText": MessageLookupByLibrary.simpleMessage("حذف"),
         "developerItemText":
             MessageLookupByLibrary.simpleMessage("طراحی و توسعه یافته توسط "),
+        "developerName": MessageLookupByLibrary.simpleMessage("رادنیو"),
         "emptyListMessageSubtitle": MessageLookupByLibrary.simpleMessage(
             "بزن بریم مکان مورد علاقه ات رو اضافه کنیم."),
         "emptyListMessageTitle":
