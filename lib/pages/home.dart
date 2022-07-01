@@ -5,14 +5,17 @@ import 'package:flutter/material.dart';
 import 'package:text_marquee/text_marquee.dart';
 import 'package:weather_app/components/blur_container.dart';
 import 'package:weather_app/components/home_page_refresh_indicator.dart';
-import 'package:weather_app/components/shadow.dart';
+import 'package:weather_app/components/image_with_shadow.dart';
+import 'package:weather_app/components/linear_progress_bar.dart';
 import 'package:weather_app/components/shimmer_loading.dart';
+import 'package:weather_app/components/stylish_text.dart';
 import 'package:weather_app/components/top_app_bar.dart';
 import 'package:weather_app/database/database.dart';
 import 'package:weather_app/database/entities/saved_location_entity.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
+import 'package:weather_app/models/aqi.dart';
 import 'package:weather_app/models/weather_conditions.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
@@ -56,6 +59,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   List<HourlyForecast> _hourlyForecastsList = [];
   /// Hold sunrise and sunset data.
   SunStatus _sunStatus = SunStatus();
+  /// Hold AQI data. [FAKE DATA]
+  AqiStatus _aqiStatus = AqiStatus.empty();
 
   @override
   void initState() {
@@ -249,6 +254,14 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                       )
                     ),
                     _buildDivider(), // -----------------
+                    SliverToBoxAdapter(
+                      child: _AirQualityIndex(
+                        aqiStatus: _aqiStatus,
+                        isOnLoading: _isOnLoading,
+                        isDataUnavailable: _isDataUnavailable
+                      ),
+                    ),
+                    _buildDivider(), // -----------------
                   ]
                 )
               ),
@@ -321,6 +334,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     // :: Send get sunrise and sunset request.
     DataRefreshState sunStatusState = await _getSunStatus();
     if (sunStatusState != DataRefreshState.success) return sunStatusState;
+
+    // :: Create AQI fake data.
+    _aqiStatus = AqiStatus.random(_strings.aqiScaleText.split(','));
 
     // :: If no error happened return success state.
     return DataRefreshState.success;
@@ -897,6 +913,321 @@ class _SunStatusTimeItem extends StatelessWidget {
         Text(time, style: _types.headline6!.apply(color: _palette.onBackground)),
         const SizedBox(height: 3),
         Text(label, style: _types.caption!.apply(color: _palette.subtitle))
+      ],
+    );
+  }
+}
+
+// :: AirQualityIndex
+class _AirQualityIndex extends StatelessWidget {
+  final AqiStatus aqiStatus;
+  final bool isOnLoading;
+  final bool isDataUnavailable;
+  const _AirQualityIndex({
+    Key? key,
+    required this.aqiStatus,
+    this.isOnLoading = false,
+    this.isDataUnavailable = false
+  }) : super(key: key);
+
+  /// Build title shimmer style.
+  Row _buildTitleShimmer() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ShimmerContainer(width: 24, height: 24, color: _palette.background),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ShimmerContainer(width: 166, height: 20, color: _palette.background),
+                const SizedBox(width: 8),
+                ShimmerContainer(width: 67, height: 20, color: _palette.background)
+              ],
+            ),
+            const SizedBox(height: 5),
+            ShimmerContainer(width: 200, height: 10, color: _palette.background)
+          ]
+        )
+      ]
+    );
+  }
+  /// Build title.
+  Row _buildTitle() {
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.only(top: 3),
+          child: SizedBox.square(
+            dimension: Dimens.topAppbarIconSize,
+            child: Image.asset(
+              IconAssets.remixLeaf,
+              color: _palette.onBackground,
+              fit: BoxFit.fill
+            ),
+          ),
+        ),
+        const SizedBox(width: 8),
+        FittedBox(
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Row(
+                children: [
+                  Text(
+                    _strings.airQualityIndexTitle,
+                    style: _types.headline6!.apply(color: _palette.onBackground)
+                  ),
+                  const SizedBox(width: 8),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: _palette.divider,
+                      borderRadius: BorderRadius.circular(Dimens.smallShapesBorderRadius)
+                    ),
+                    child: Text(
+                      _strings.aqiFakeDateTagText,
+                      style: _types.overline!.apply(color: _palette.subtitle)
+                    ),
+                  )
+                ],
+              ),
+              const SizedBox(height: 3),
+              RichText(
+                text: TextSpan(
+                  children: <TextSpan> [
+                    TextSpan(
+                      text: _strings.airQualityIndexSubtitle(
+                        _pinnedLocation!.getName(_strings.locale)
+                      ),
+                      style: _types.caption!.apply(color: _palette.subtitle)
+                    ),
+                    TextSpan(
+                      text: (isDataUnavailable)? '---' : aqiStatus.status,
+                      style: _types.caption!.copyWith(
+                        color: aqiStatus.aqi.getColor(_palette),
+                        fontWeight: FontWeight.w500
+                      )
+                    ),
+                    TextSpan(
+                      text: (_strings.locale == 'en')? '.' : ' است.',
+                      style: _types.caption!.apply(color: _palette.subtitle)
+                    ),
+                  ]
+                )
+              )
+            ],
+          ),
+        )
+      ],
+    );
+  }
+  /// Build shimmer style for the widget.
+  ShimmerLoading _buildShimmer() => ShimmerLoading(
+      child: Column(
+        children: [
+          _buildTitleShimmer(),
+          const SizedBox(height: 32),
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 12),
+            child: Row(
+              children: [
+                DashedCircularProgressBar.square(
+                  dimensions: Dimens.aqiProgressBarSize,
+                  startAngle: 225,
+                  sweepAngle: 270,
+                  backgroundColor: _palette.background,
+                  backgroundStrokeWidth: 12,
+                  child: Align(
+                    alignment: Alignment.center,
+                    child: ShimmerContainer(
+                      width: 42, height: 27,
+                      color: _palette.background
+                    )
+                  ),
+                ),
+                const SizedBox(width: 32),
+                Expanded(
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GasInfo.shimmer(),
+                          const SizedBox(height: 16),
+                          GasInfo.shimmer(),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GasInfo.shimmer(),
+                          const SizedBox(height: 16),
+                          GasInfo.shimmer(),
+                        ],
+                      ),
+                      Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          GasInfo.shimmer(),
+                          const SizedBox(height: 16),
+                          GasInfo.shimmer(),
+                        ],
+                      ),
+                    ],
+                  ),
+                )
+              ],
+            ),
+          )
+        ],
+      )
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+        padding: const EdgeInsets.symmetric(
+            horizontal: Dimens.horizontalPadding,
+            vertical: Dimens.verticalPadding
+        ),
+        child: (isOnLoading)? _buildShimmer() : Column(
+          children: [
+            _buildTitle(),
+            const SizedBox(height: 32),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12),
+              child: Container(
+                color: Colors.transparent,
+                child: Row(
+                  children: [
+                    DashedCircularProgressBar.square(
+                      dimensions: Dimens.aqiProgressBarSize,
+                      startAngle: 225,
+                      sweepAngle: 270,
+                      progress: (isDataUnavailable)? 0 : aqiStatus.aqi.value.toDouble(),
+                      maxProgress: aqiStatus.aqi.maxValue.toDouble(),
+                      foregroundColor: aqiStatus.aqi.getColor(_palette),
+                      backgroundColor: Palette.of(context).border,
+                      foregroundStrokeWidth: 12,
+                      backgroundStrokeWidth: 12,
+                      ltr: _strings.locale == 'en',
+                      child: Align(
+                        alignment: Alignment.center,
+                        child: Text(
+                          '${(isDataUnavailable)? '---' : aqiStatus.aqi.value}',
+                          style: _types.aqiValue.apply(color: aqiStatus.aqi.getColor(_palette)),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 32),
+                    Expanded(
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GasInfo(gasFormula: 'PM', gasSub: '10', gasInfo: aqiStatus.pm10, isDataUnavailable: isDataUnavailable),
+                              const SizedBox(height: 16),
+                              GasInfo(gasFormula: 'PM', gasSub: '2.5', gasInfo: aqiStatus.pm2_5, isDataUnavailable: isDataUnavailable),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GasInfo(gasFormula: 'CO', gasInfo: aqiStatus.co, isDataUnavailable: isDataUnavailable),
+                              const SizedBox(height: 16),
+                              GasInfo(gasFormula: 'SO', gasSub: '2', gasInfo: aqiStatus.so2, isDataUnavailable: isDataUnavailable),
+                            ],
+                          ),
+                          Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              GasInfo(gasFormula: 'NO', gasSub: '2', gasInfo: aqiStatus.no2, isDataUnavailable: isDataUnavailable),
+                              const SizedBox(height: 16),
+                              GasInfo(gasFormula: 'O', gasSub: '3', gasInfo: aqiStatus.o3, isDataUnavailable: isDataUnavailable),
+                            ],
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
+            )
+          ],
+        )
+    );
+  }
+}
+
+class GasInfo extends StatelessWidget {
+  final String gasFormula, gasSub;
+  final AqiInfo gasInfo;
+  final bool isOnLoading;
+  final bool isDataUnavailable;
+  const GasInfo({
+    Key? key,
+    this.gasFormula = '',
+    this.gasSub = '',
+    required this.gasInfo,
+    this.isOnLoading = false,
+    this.isDataUnavailable = false
+  }) : super(key: key);
+
+  factory GasInfo.shimmer() => GasInfo(gasInfo: AqiInfo(0, 0), isOnLoading: true);
+
+  /// Build shimmer style.
+  Row _buildShimmer(BuildContext context) {
+    return Row(
+      children: [
+        ShimmerContainer(width: 3, height: 30, color: _palette.background),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ShimmerContainer(width: 24, height: 10, color: _palette.background),
+            const SizedBox(height: 5),
+            ShimmerContainer(width: 32, height: 15, color: _palette.background)
+          ],
+        )
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return (isOnLoading)? _buildShimmer(context) : Row(
+      children: [
+        LinearProgressBar(
+          width: 3,
+          height: 32,
+          progress: gasInfo.value.toDouble(),
+          maxProgress: gasInfo.maxValue.toDouble(),
+          foregroundColor: gasInfo.getColor(_palette),
+          backgroundColor: _palette.border,
+        ),
+        const SizedBox(width: 8),
+        Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            StylishText(
+              text: gasFormula,
+              sub: gasSub,
+              style: _types.caption!.apply(color: _palette.subtitle),
+            ),
+            Text(
+              '${(isDataUnavailable)? '---' : gasInfo.value}',
+              style: _types.subtitle1!.apply(color: _palette.onBackground)
+            )
+          ],
+        )
       ],
     );
   }

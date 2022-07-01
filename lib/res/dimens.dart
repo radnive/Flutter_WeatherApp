@@ -24,6 +24,7 @@ class Dimens {
   static const double weatherInfoDividerSize = 24;
   static const double hourlyWeatherIconSize = 24;
   static const double sunStatusIconSize = 32;
+  static const double aqiProgressBarSize = 120;
 
   // :: HomePageRefreshIndicator
   static const double refreshIndicatorOffsetToArmed = 136;
