@@ -3,8 +3,10 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart' show SystemNavigator;
 import 'package:weather_app/components/message.dart';
 import 'package:weather_app/database/database.dart';
+import 'package:weather_app/database/entities/saved_location_entity.dart';
 import 'package:weather_app/generated/l10n.dart';
 import 'package:weather_app/global_keys.dart';
+import 'package:weather_app/pages/home.dart';
 import 'package:weather_app/pages/manage_locations.dart';
 import 'package:weather_app/pages/settings.dart';
 import 'package:weather_app/pages/start.dart';
@@ -67,8 +69,9 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
   // Create router.
   AppRouterDelegate(this.db) :
     navigatorKey = GlobalKey<NavigatorState>(),
-    _currentRoute = AppRoutePath.start(),
-    _isBackButtonDisabled = false;
+    _isBackButtonDisabled = false,
+    _currentRoute = (SavedLocation.isCollectionEmpty(db))?
+      AppRoutePath.start() : AppRoutePath.home();
 
   @override
   Widget build(BuildContext context) {
@@ -82,6 +85,16 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
       pages: [
         // Start page.
         MaterialPage(key: const ValueKey('StartPage'), child: StartPage(navigateTo: _navigateTo)),
+
+        // Home page.
+        if(_currentRoute.isHome) MaterialPage(
+          key: const ValueKey('HomePage'),
+          child: HomePage(
+            key: homePageGlobalKey,
+            navigateTo: _navigateTo,
+            changeBackButtonStatus: _setBackButtonStatus,
+          )
+        ),
 
         // ManageLocations page.
         if(_currentRoute.isManageLocations) SlidePage(
@@ -120,6 +133,18 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
 
     // :: Check for back button availability.
     if(_isBackButtonDisabled) { return true; }
+
+    // :: If saved locations collection is empty, navigate to start page.
+    if (_currentRoute.isManageLocations || _currentRoute.isSettings) {
+      if(SavedLocation.isCollectionEmpty(db)) {
+        _navigateTo(AppRoutePath.start());
+        return true;
+      } else {
+        _navigateTo(AppRoutePath.home());
+        return true;
+      }
+    }
+
     // :: Confirm exit app when user click on NavigationBar back button in home or start pages.
     return _confirmExitApp();
   }
