@@ -1,5 +1,7 @@
+import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:flutter/material.dart';
 import 'package:weather_app/components/blur_container.dart';
+import 'package:weather_app/components/home_page_refresh_indicator.dart';
 import 'package:weather_app/components/shimmer_loading.dart';
 import 'package:weather_app/components/top_app_bar.dart';
 import 'package:weather_app/database/database.dart';
@@ -34,8 +36,10 @@ class HomePage extends StatefulWidget {
 
 class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
+  final _refreshIndicatorKey = GlobalKey<CustomRefreshIndicatorState>();
   bool _isCollapsed = false;
-  bool _isOnLoading = true;
+  bool _isOnLoading = false;
+  bool _isDataUnavailable = true;
 
   @override
   void initState() {
@@ -188,20 +192,28 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       backgroundColor: _palette.background,
       body: AnnotatedRegion(
       value: Theme.of(context).uiOverlayStyle,
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: CustomScrollView(
-                slivers: [
-                  _buildSliverAppBar(context)
-                ]
+        child: HomePageRefreshIndicator(
+          indicatorKey: _refreshIndicatorKey,
+          controller: IndicatorController(refreshEnabled: true),
+          onRefresh: (_) async {
+            await Future.delayed(const Duration(seconds: 2));
+            return DataRefreshState.success;
+          },
+          child: Stack(
+            children: [
+              Positioned.fill(
+                child: CustomScrollView(
+                  slivers: [
+                    _buildSliverAppBar(context)
+                  ]
+                )
+              ),
+              Positioned(
+                  top: 0, left: 0, right: 0,
+                  child: _buildTopAppBar()
               )
-            ),
-            Positioned(
-              top: 0, left: 0, right: 0,
-              child: _buildTopAppBar()
-            )
-          ]
+            ]
+          )
         )
       )
     );

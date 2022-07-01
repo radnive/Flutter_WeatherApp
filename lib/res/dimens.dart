@@ -21,6 +21,11 @@ class Dimens {
   // :: Home page.
   static const double sliverAppbarFullHeight = 480;
 
+  // :: HomePageRefreshIndicator
+  static const double refreshIndicatorOffsetToArmed = 136;
+  static const double refreshIndicatorMessageIconSize = 22;
+  static const double refreshIndicatorMessageLoadingIndicatorRadius = 10;
+
   // :: Settings page.
   static const double settingsItemsIconSize = 22;
 
