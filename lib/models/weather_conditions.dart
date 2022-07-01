@@ -101,3 +101,51 @@ class HourlyForecast {
   factory HourlyForecast.fromJson(Map<String, dynamic> json) => _$HourlyForecastFromJson(json);
   Map<String, dynamic> toJson() => _$HourlyForecastToJson(this);
 }
+
+@JsonSerializable()
+class SunStatus {
+  final String sunrise;
+  final String sunset;
+  final String dayLength;
+  final String currentTime;
+  double get sunProgress {
+    // If object doesn't initialized.
+    if (dayLength.isEmpty) { return 0; }
+    // Calculate values.
+    int nowInSeconds = _stringTimeToInt(currentTime);
+    int sunriseInSeconds = _stringTimeToInt(sunrise);
+    int sunsetInSeconds = _stringTimeToInt(sunset);
+    int dayLengthInSeconds = _stringTimeToInt(dayLength);
+    // If sunset already happened.
+    if (nowInSeconds >= sunsetInSeconds) { return 100; }
+    // If sun still in the sky.
+    return ((nowInSeconds - sunriseInSeconds) * 100) / dayLengthInSeconds;
+  }
+  SunStatus({this.sunrise = '', this.sunset = '', this.dayLength = '', this.currentTime = ''});
+
+  factory SunStatus.fromJsonRes(Map<String, dynamic> json) => SunStatus(
+      sunrise: json['sunrise'],
+      sunset: json['sunset'],
+      dayLength: json['day_length'],
+      currentTime: json['current_time'].split('.')[0]
+  );
+
+  factory SunStatus.fromJson(Map<String, dynamic> json) => _$SunStatusFromJson(json);
+  Map<String, dynamic> toJson() => _$SunStatusToJson(this);
+
+  /// Convert string time to int.
+  int _stringTimeToInt(String time) {
+    if (time.isEmpty) { return 0; }
+
+    int output = 0;
+    List<int> inSec = [3600, 60, 1];
+    List<String> parts = time.split(':');
+
+    if(parts.isEmpty) { return 0; }
+
+    for(int index = 0; index < parts.length; index++) {
+      output += (int.parse(parts[index]) * inSec[index]);
+    }
+    return output;
+  }
+}

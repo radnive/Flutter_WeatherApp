@@ -1,6 +1,6 @@
 import 'dart:convert';
-
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
+import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 import 'package:flutter/material.dart';
 import 'package:text_marquee/text_marquee.dart';
 import 'package:weather_app/components/blur_container.dart';
@@ -54,6 +54,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   CurrentWeather _currentWeather = CurrentWeather.empty();
   /// Hold hourly weather forecasts data.
   List<HourlyForecast> _hourlyForecastsList = [];
+  /// Hold sunrise and sunset data.
+  SunStatus _sunStatus = SunStatus();
 
   @override
   void initState() {
@@ -239,6 +241,14 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                       ),
                     ),
                     _buildDivider(), // -----------------
+                    SliverToBoxAdapter(
+                      child: _SunStatus(
+                        status: _sunStatus,
+                        isOnLoading: _isOnLoading,
+                        isDataUnavailable: _isDataUnavailable
+                      )
+                    ),
+                    _buildDivider(), // -----------------
                   ]
                 )
               ),
@@ -308,6 +318,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     DataRefreshState hourlyForecastState = await _getHourlyForecast();
     if (hourlyForecastState != DataRefreshState.success) return currentWeatherState;
 
+    // :: Send get sunrise and sunset request.
+    DataRefreshState sunStatusState = await _getSunStatus();
+    if (sunStatusState != DataRefreshState.success) return sunStatusState;
+
     // :: If no error happened return success state.
     return DataRefreshState.success;
   }
@@ -349,6 +363,24 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     } else {
       return (hourlyForecastRes.statusCode == Internet.exceededRequestNumberStatusCode)?
         DataRefreshState.noResponse : DataRefreshState.error;
+    }
+  }
+  /// Get sunrise and sunset from IpGeoLocation API.
+  Future<DataRefreshState> _getSunStatus() async {
+    // Send request and get response.
+    final sunStatusRes = await http.get(Urls.sunStatus(
+      lat: _pinnedLocation!.latitude,
+      long: _pinnedLocation!.longitude,
+    ));
+
+    if (sunStatusRes.statusCode == 200) {
+      // Convert and save received data.
+      _sunStatus = SunStatus.fromJsonRes(jsonDecode(sunStatusRes.body));
+      // Return success state.
+      return DataRefreshState.success;
+    } else {
+      return (sunStatusRes.statusCode == Internet.exceededRequestNumberStatusCode)?
+      DataRefreshState.noResponse : DataRefreshState.error;
     }
   }
 }
@@ -731,6 +763,140 @@ class _HourlyForecastItem extends StatelessWidget {
           width: Dimens.hourlyWeatherIconSize,
           height: Dimens.hourlyWeatherIconSize
         )
+      ],
+    );
+  }
+}
+
+// :: SunStatus
+class _SunStatus extends StatelessWidget {
+  final SunStatus status;
+  final bool isOnLoading;
+  final bool isDataUnavailable;
+  const _SunStatus({
+    Key? key,
+    required this.status,
+    this.isOnLoading = false,
+    this.isDataUnavailable = false
+  }) : super(key: key);
+
+  /// Build shimmer style.
+  ShimmerLoading _buildShimmer(BuildContext context) => ShimmerLoading(
+    child: Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        _SunStatusTimeItem.shimmer(),
+        Expanded(
+          child: Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 40),
+            child: DashedCircularProgressBar.aspectRatio(
+              aspectRatio: 2,
+              startAngle: 270,
+              sweepAngle: 180,
+              backgroundStrokeWidth: 2,
+              backgroundColor: _palette.background,
+              circleCenterAlignment: Alignment.bottomCenter,
+            ),
+          )
+        ),
+        _SunStatusTimeItem.shimmer()
+      ],
+    )
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Dimens.horizontalPadding,
+        vertical: Dimens.verticalPadding
+      ),
+      child: (isOnLoading)? _buildShimmer(context) : Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _SunStatusTimeItem(
+            label: _strings.sunriseText,
+            time: (isDataUnavailable)? '---' : status.sunrise,
+            icon: IconAssets.remixSunriseLine
+          ),
+          Expanded(
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 40),
+              child: DashedCircularProgressBar.aspectRatio(
+                aspectRatio: 2,
+                progress: (isDataUnavailable)? 0 : status.sunProgress,
+                startAngle: 270,
+                sweepAngle: 180,
+                animation: true,
+                foregroundStrokeWidth: 2,
+                backgroundStrokeWidth: 1,
+                foregroundColor: _palette.onBackground,
+                backgroundColor: _palette.subtitle,
+                backgroundDashSize: 2,
+                backgroundGapSize: 3,
+                seekSize: 16,
+                seekColor: _palette.warning,
+                circleCenterAlignment: Alignment.bottomCenter,
+                ltr: _strings.locale == 'en'
+              ),
+            )
+          ),
+          _SunStatusTimeItem(
+            label: _strings.sunsetText,
+            time: (isDataUnavailable)? '---' : status.sunset,
+            icon: IconAssets.remixSunsetLine
+          )
+        ],
+      ),
+    );
+  }
+}
+
+class _SunStatusTimeItem extends StatelessWidget {
+  final String label;
+  final String time;
+  final String icon;
+  final bool isOnLoading;
+  const _SunStatusTimeItem({
+    Key? key,
+    this.label = '',
+    this.time = '',
+    this.icon = '',
+    this.isOnLoading = false
+  }) : super(key: key);
+
+  factory _SunStatusTimeItem.shimmer() => const _SunStatusTimeItem(isOnLoading: true);
+
+  /// Build shimmer style.
+  Column _buildShimmer(BuildContext context) {
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        ShimmerContainer(width: 32, height: 32, color: _palette.background),
+        const SizedBox(height: 10),
+        ShimmerContainer(width: 72, height: 19, color: _palette.background),
+        const SizedBox(height: 8),
+        ShimmerContainer(width: 56, height: 11, color: _palette.background),
+      ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return (isOnLoading)? _buildShimmer(context) : Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        SizedBox.square(
+          dimension: Dimens.sunStatusIconSize,
+          child: Image.asset(icon,
+            color: _palette.onBackground,
+            fit: BoxFit.fill
+          ),
+        ),
+        const SizedBox(height: 10),
+        Text(time, style: _types.headline6!.apply(color: _palette.onBackground)),
+        const SizedBox(height: 3),
+        Text(label, style: _types.caption!.apply(color: _palette.subtitle))
       ],
     );
   }

@@ -61,3 +61,17 @@ Map<String, dynamic> _$HourlyForecastToJson(HourlyForecast instance) =>
       'weatherIcon': instance.weatherIcon,
       'temperature': instance.temperature,
     };
+
+SunStatus _$SunStatusFromJson(Map<String, dynamic> json) => SunStatus(
+      sunrise: json['sunrise'] as String? ?? '',
+      sunset: json['sunset'] as String? ?? '',
+      dayLength: json['dayLength'] as String? ?? '',
+      currentTime: json['currentTime'] as String? ?? '',
+    );
+
+Map<String, dynamic> _$SunStatusToJson(SunStatus instance) => <String, dynamic>{
+      'sunrise': instance.sunrise,
+      'sunset': instance.sunset,
+      'dayLength': instance.dayLength,
+      'currentTime': instance.currentTime,
+    };
