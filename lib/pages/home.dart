@@ -274,6 +274,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                       )
                     ),
                     _buildDivider(), // -----------------
+                    const SliverToBoxAdapter(child: _DeveloperIntro())
                   ]
                 )
               ),
@@ -1471,6 +1472,36 @@ class _WeatherForecastItem extends StatelessWidget {
           ),
         )
       ],
+    );
+  }
+}
+
+// :: DeveloperIntro.
+class _DeveloperIntro extends StatelessWidget {
+  const _DeveloperIntro({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: Dimens.horizontalPadding, vertical: 32),
+      child: RichText(
+        textAlign: TextAlign.center,
+        text: TextSpan(
+          children: <TextSpan> [
+            TextSpan(
+              text: _strings.developerItemText,
+              style: _types.caption!.apply(color: _palette.subtitle)
+            ),
+            TextSpan(
+              text: 'Radnive',
+              style: _types.caption!.copyWith(
+                  color: _palette.onBackground,
+                  fontWeight: FontWeight.w700
+              )
+            )
+          ]
+        )
+      )
     );
   }
 }
