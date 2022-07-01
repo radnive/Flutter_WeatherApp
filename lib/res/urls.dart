@@ -53,4 +53,10 @@ class Urls {
   /// Get sun status.
   static Uri sunStatus({required double lat, required double long}) =>
     Uri.parse('https://api.ipgeolocation.io/astronomy?${ApiKeys.ipGeoLocation}&lat=$lat&long=$long');
+
+  /// Get next 4 days forecast.
+  static Uri weatherForecast(String locationKey, { required bool isMetric }) {
+    final String useMetric = (isMetric)? '&metric=true' : '';
+    return Uri.parse('$baseUrl/forecasts/v1/daily/5day/$locationKey?${ApiKeys.accuweather}$useMetric');
+  }
 }

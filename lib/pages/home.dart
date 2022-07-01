@@ -61,6 +61,9 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   SunStatus _sunStatus = SunStatus();
   /// Hold AQI data. [FAKE DATA]
   AqiStatus _aqiStatus = AqiStatus.empty();
+  /// Hold next 4 days weather forecasts data.
+  List<WeatherForecast> _weatherForecastsList = [];
+  String _next12DaysForecastUrl = '';
 
   @override
   void initState() {
@@ -243,7 +246,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                         forecasts: _hourlyForecastsList,
                         isOnLoading: _isOnLoading,
                         isDataUnavailable: _isDataUnavailable
-                      ),
+                      )
                     ),
                     _buildDivider(), // -----------------
                     SliverToBoxAdapter(
@@ -259,7 +262,16 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                         aqiStatus: _aqiStatus,
                         isOnLoading: _isOnLoading,
                         isDataUnavailable: _isDataUnavailable
-                      ),
+                      )
+                    ),
+                    _buildDivider(), // -----------------
+                    SliverToBoxAdapter(
+                      child: _Next4DaysForecasts(
+                        forecasts: _weatherForecastsList,
+                        next12DaysUrl: _next12DaysForecastUrl,
+                        isOnLoading: _isOnLoading,
+                        isDataUnavailable: _isDataUnavailable
+                      )
                     ),
                     _buildDivider(), // -----------------
                   ]
@@ -331,12 +343,16 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     DataRefreshState hourlyForecastState = await _getHourlyForecast();
     if (hourlyForecastState != DataRefreshState.success) return currentWeatherState;
 
-    // :: Send get sunrise and sunset request.
+    // :: Send GET sunrise and sunset request.
     DataRefreshState sunStatusState = await _getSunStatus();
     if (sunStatusState != DataRefreshState.success) return sunStatusState;
 
     // :: Create AQI fake data.
     _aqiStatus = AqiStatus.random(_strings.aqiScaleText.split(','));
+
+    // :: Send GET next 4 days weather forecasts request.
+    DataRefreshState next5DaysForecastState = await _getNext5DaysForecast();
+    if (next5DaysForecastState != DataRefreshState.success) return currentWeatherState;
 
     // :: If no error happened return success state.
     return DataRefreshState.success;
@@ -397,6 +413,23 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     } else {
       return (sunStatusRes.statusCode == Internet.exceededRequestNumberStatusCode)?
       DataRefreshState.noResponse : DataRefreshState.error;
+    }
+  }
+  /// Get next 4 days weather forecast from AccuWeather API.
+  Future<DataRefreshState> _getNext5DaysForecast() async {
+    final weatherForecastRes = await http.get(Urls.weatherForecast(
+      _pinnedLocation!.locationKey,
+      isMetric: _userSettings.temperatureUnit.isMetric
+    ));
+
+    if (weatherForecastRes.statusCode == 200) {
+      final Map<String, dynamic> jsonBody = jsonDecode(weatherForecastRes.body);
+      _weatherForecastsList = WeatherForecast.fromJsonArrayRes(jsonBody);
+      _next12DaysForecastUrl = jsonBody['Headline']['MobileLink'];
+      return DataRefreshState.success;
+    } else {
+      return (weatherForecastRes.statusCode == Internet.exceededRequestNumberStatusCode)?
+        DataRefreshState.noResponse : DataRefreshState.error;
     }
   }
 }
@@ -1227,6 +1260,215 @@ class GasInfo extends StatelessWidget {
               style: _types.subtitle1!.apply(color: _palette.onBackground)
             )
           ],
+        )
+      ],
+    );
+  }
+}
+
+// :: Next4DaysForecasts
+class _Next4DaysForecasts extends StatelessWidget {
+  final List<WeatherForecast> forecasts;
+  final bool isOnLoading;
+  final bool isDataUnavailable;
+  final String next12DaysUrl;
+  const _Next4DaysForecasts({
+    Key? key,
+    required this.forecasts,
+    this.isOnLoading = false,
+    this.isDataUnavailable = false,
+    this.next12DaysUrl = ''
+  }) : super(key: key);
+
+  /// Build shimmer style.
+  ShimmerLoading _buildShimmer(BuildContext context) {
+    List<Widget> items = [];
+    for(int index = 0; index < 5; index++) {
+      items.add(_WeatherForecastItem.shimmer());
+      items.add(const SizedBox(height: 32));
+    }
+    items.add(ShimmerContainer(width: null, height: 47, color: Palette.of(context).background));
+    return ShimmerLoading(child: Column(children: items));
+  }
+
+  /// Build unavailable style.
+  Column _buildUnavailable() {
+    List<Widget> items = [];
+    for(int index = 0; index < 5; index++) {
+      items.add(_WeatherForecastItem.unavailable());
+      items.add(const SizedBox(height: 32));
+    }
+    items.add(ElevatedButton(
+        onPressed: null,
+        style: ElevatedButton.styleFrom(
+          elevation: 0,
+          padding: const EdgeInsets.symmetric(vertical: 12)
+        ),
+        child: Row(
+          mainAxisSize: MainAxisSize.max,
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox.square(
+              dimension: Dimens.next4DaysButtonIconSize,
+              child: Image.asset(
+                IconAssets.remixCloudyLine,
+                fit: BoxFit.fill,
+                color: _palette.onPrimary
+              )
+            ),
+            const SizedBox(width: 8),
+            Text(
+              _strings.unavailableText,
+              style: _types.button!.apply(color: _palette.onPrimary)
+            )
+          ],
+        )
+    ));
+    return Column(children: items);
+  }
+
+  Column _buildWeatherForecasts(BuildContext context) {
+    List<Widget> items = [];
+    for(WeatherForecast wf in forecasts) {
+      items.add(_WeatherForecastItem(
+        forecast: wf,
+        isForTomorrow: items.isEmpty,
+      ));
+      items.add(const SizedBox(height: 32));
+    }
+
+    items.add(ElevatedButton(
+      onPressed: () => Internet.openUrl(context, url: next12DaysUrl),
+      style: ElevatedButton.styleFrom(
+        elevation: 0,
+        padding: const EdgeInsets.symmetric(vertical: 12)
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.max,
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          SizedBox.square(
+            dimension: Dimens.next4DaysButtonIconSize,
+            child: Image.asset(
+              IconAssets.remixCloudyLine,
+              fit: BoxFit.fill,
+              color: _palette.onPrimary
+            )
+          ),
+          const SizedBox(width: 8),
+          Text(
+            _strings.next12DaysForecastButtonText,
+            style: _types.button!.apply(color: _palette.onPrimary)
+          )
+        ],
+      )
+    ));
+
+    return Column(children: items);
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: Dimens.horizontalPadding,
+        vertical: Dimens.verticalPadding
+      ),
+      child: (isOnLoading)? _buildShimmer(context) : (isDataUnavailable)? _buildUnavailable() : _buildWeatherForecasts(context)
+    );
+  }
+}
+
+class _WeatherForecastItem extends StatelessWidget {
+  final WeatherForecast forecast;
+  final bool isOnLoading;
+  final bool isDataUnavailable;
+  final bool isForTomorrow;
+  const _WeatherForecastItem({
+    Key? key,
+    required this.forecast,
+    this.isOnLoading = false,
+    this.isDataUnavailable = false,
+    this.isForTomorrow = false
+  }) : super(key: key);
+
+  factory _WeatherForecastItem.shimmer() =>
+      _WeatherForecastItem(forecast: WeatherForecast.empty(), isOnLoading: true);
+  factory _WeatherForecastItem.unavailable() =>
+      _WeatherForecastItem(forecast: WeatherForecast.empty(), isDataUnavailable: true);
+
+  /// Build shimmer style.
+  Row _buildShimmer() => Row(
+    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    children: [
+      Expanded(
+        flex: 17,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            ShimmerContainer(width: 96, height: 20, color: _palette.background),
+            const SizedBox(height: 5),
+            ShimmerContainer(width: 63, height: 12, color: _palette.background)
+          ]
+        ),
+      ),
+      Expanded(
+        flex: 15,
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+          children: [
+            ShimmerContainer(width: 64, height: 36, color: _palette.background),
+            ShimmerContainer(width: 48, height: 48, color: _palette.background)
+          ],
+        ),
+      )
+    ],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    // Get week day name.
+    String dayText = (isForTomorrow)? _strings.tomorrowText : forecast.date.weekDayStr(_strings.locale == 'en');
+
+    return (isOnLoading)? _buildShimmer() : Row(
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+      children: [
+        Expanded(
+          flex: 17,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                (isDataUnavailable)? '---' : dayText,
+                style: _types.subtitle1!.apply(color: _palette.onBackground),
+              ),
+              const SizedBox(height: 5),
+              Text(
+                (isDataUnavailable)? '---' : forecast.date.toStrWithoutWeekDay(_strings.locale == 'en'),
+                style: _types.subtitle2!.apply(color: _palette.subtitle)
+              ),
+            ]
+          ),
+        ),
+        Expanded(
+          flex: 15,
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              StylishText(
+                text: '${(isDataUnavailable)? 'x' : forecast.temperature.toInt()}',
+                sup: '°${_userSettings.temperatureUnit.text}',
+                style: _types.headline4!.apply(color: _palette.onBackground)
+              ),
+              SizedBox.square(
+                dimension: Dimens.weatherForecastIconSize,
+                child: Image.asset(
+                  (isDataUnavailable)? ImageAssets.unknownWeatherIcon : ImageAssets.weatherIcons[forecast.iconIndex],
+                  fit: BoxFit.fill
+                ),
+              )
+            ],
+          ),
         )
       ],
     );

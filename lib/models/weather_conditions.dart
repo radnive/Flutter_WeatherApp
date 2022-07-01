@@ -149,3 +149,35 @@ class SunStatus {
     return output;
   }
 }
+
+@JsonSerializable()
+class WeatherForecast {
+  final DateTime dateTime;
+  Date get date => Date(dateTime);
+  final double temperature;
+  final int iconIndex;
+  const WeatherForecast({
+    required this.dateTime,
+    this.temperature = 0,
+    this.iconIndex = 0
+  });
+
+  factory WeatherForecast.empty() => WeatherForecast(dateTime: DateTime.now());
+
+  factory WeatherForecast.fromJsonRes(Map<String, dynamic> json) => WeatherForecast(
+      dateTime: DateTime.fromMillisecondsSinceEpoch(json['EpochDate'] * 1000, isUtc: true),
+      temperature: json['Temperature']['Maximum']['Value'],
+      iconIndex: json['Day']['Icon']
+  );
+  static List<WeatherForecast> fromJsonArrayRes(Map<String, dynamic> json) {
+    List<WeatherForecast> items = [];
+    List<dynamic> jsonArray = json['DailyForecasts'];
+    for(int index = 1; index < jsonArray.length; index ++) {
+      items.add(WeatherForecast.fromJsonRes(jsonArray[index]));
+    }
+    return items;
+  }
+
+  factory WeatherForecast.fromJson(Map<String, dynamic> json) => _$WeatherForecastFromJson(json);
+  Map<String, dynamic> toJson() => _$WeatherForecastToJson(this);
+}

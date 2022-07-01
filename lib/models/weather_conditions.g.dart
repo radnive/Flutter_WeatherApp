@@ -75,3 +75,17 @@ Map<String, dynamic> _$SunStatusToJson(SunStatus instance) => <String, dynamic>{
       'dayLength': instance.dayLength,
       'currentTime': instance.currentTime,
     };
+
+WeatherForecast _$WeatherForecastFromJson(Map<String, dynamic> json) =>
+    WeatherForecast(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      temperature: (json['temperature'] as num?)?.toDouble() ?? 0,
+      iconIndex: json['iconIndex'] as int? ?? 0,
+    );
+
+Map<String, dynamic> _$WeatherForecastToJson(WeatherForecast instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'temperature': instance.temperature,
+      'iconIndex': instance.iconIndex,
+    };

@@ -25,6 +25,8 @@ class Dimens {
   static const double hourlyWeatherIconSize = 24;
   static const double sunStatusIconSize = 32;
   static const double aqiProgressBarSize = 120;
+  static const double weatherForecastIconSize = 40;
+  static const double next4DaysButtonIconSize = 20;
 
   // :: HomePageRefreshIndicator
   static const double refreshIndicatorOffsetToArmed = 136;
