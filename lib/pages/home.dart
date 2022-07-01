@@ -102,7 +102,13 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
           ),
           buttonBorder: _palette.border,
           buttonIconColor: _palette.onBackground,
-          ltr: _strings.locale == 'en'
+          ltr: _strings.locale == 'en',
+          onManageLocationsButtonPressed: () {
+            widget.navigateTo(AppRoutePath.manageLocations());
+          },
+          onSettingsButtonPressed: () {
+            widget.navigateTo(AppRoutePath.settings());
+          }
         )
       ),
     );
@@ -1147,7 +1153,7 @@ class _AirQualityIndex extends StatelessWidget {
                       progress: (isDataUnavailable)? 0 : aqiStatus.aqi.value.toDouble(),
                       maxProgress: aqiStatus.aqi.maxValue.toDouble(),
                       foregroundColor: aqiStatus.aqi.getColor(_palette),
-                      backgroundColor: Palette.of(context).border,
+                      backgroundColor: _palette.border,
                       foregroundStrokeWidth: 12,
                       backgroundStrokeWidth: 12,
                       ltr: _strings.locale == 'en',
@@ -1288,7 +1294,7 @@ class _Next4DaysForecasts extends StatelessWidget {
       items.add(_WeatherForecastItem.shimmer());
       items.add(const SizedBox(height: 32));
     }
-    items.add(ShimmerContainer(width: null, height: 47, color: Palette.of(context).background));
+    items.add(ShimmerContainer(width: null, height: 47, color: _palette.background));
     return ShimmerLoading(child: Column(children: items));
   }
 
