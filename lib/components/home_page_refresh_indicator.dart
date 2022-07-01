@@ -13,7 +13,7 @@ class HomePageRefreshIndicator extends StatefulWidget {
   final Widget child;
   final IndicatorController? controller;
   final GlobalKey<CustomRefreshIndicatorState>? indicatorKey;
-  final Future<DataRefreshState> Function(BuildContext context) onRefresh;
+  final Future<DataRefreshState> Function() onRefresh;
 
   const HomePageRefreshIndicator({
     Key? key,
@@ -41,7 +41,7 @@ class _HomePageRefreshIndicatorState extends State<HomePageRefreshIndicator> {
       key: widget.indicatorKey,
       controller: widget.controller,
       offsetToArmed: Dimens.refreshIndicatorOffsetToArmed,
-      onRefresh: () => _refreshData(context),
+      onRefresh: _refreshData,
       onStateChanged: _onStateChanged,
       builder: (_, child, controller) => AnimatedBuilder(
         animation: controller,
@@ -65,9 +65,9 @@ class _HomePageRefreshIndicatorState extends State<HomePageRefreshIndicator> {
   }
 
   /// This method call when refresh indicator armed.
-  Future<void> _refreshData(BuildContext context) async {
+  Future<void> _refreshData() async {
     DataRefreshState state;
-    state = await widget.onRefresh(context);
+    state = await widget.onRefresh();
     setState(() => _indicatorState = state);
     await Future.delayed(const Duration(seconds: 3));
   }

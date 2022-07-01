@@ -17,14 +17,16 @@ enum WindSpeedUnit {
   final String text;
   const WindSpeedUnit(this.text);
   factory WindSpeedUnit.get(int index) => WindSpeedUnit.values[index];
-  static bool isMetric(int index) => index == 0;
+  static isItMetric(int index) => index == 0;
+  bool get isMetric => index == 0;
 }
 
 enum VisibilityUnit {
   km, mi;
   const VisibilityUnit();
   factory VisibilityUnit.get(int index) => VisibilityUnit.values[index];
-  static bool isMetric(int index) => index == 0;
+  static isItMetric(int index) => index == 0;
+  bool get isMetric => index == 0;
 }
 
 @Entity()

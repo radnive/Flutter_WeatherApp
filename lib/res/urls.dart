@@ -39,7 +39,7 @@ class Urls {
     // Check for language.
     final String lang = (locale != 'en')? '&language=$locale' : '';
     // Check for details.
-    final String getDetails = (details)? 'details=true' : '';
+    final String getDetails = (details)? '&details=true' : '';
     // Create Uri.
     return Uri.parse('$baseUrl/currentconditions/v1/$locationKey?${ApiKeys.accuweather}$lang$getDetails');
   }
