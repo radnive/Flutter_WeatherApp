@@ -40,6 +40,7 @@ dependencies:
   location: ^4.4.0
   connectivity: ^3.0.6
   flutter_slidable: ^1.3.0
+  text_marquee: ^0.0.1
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.

@@ -9,6 +9,7 @@ class Dimens {
   static const double topAppbarTopPadding = 24;
   static const double topAppbarBottomPadding = 32;
   static const double topAppbarButtonSize = 40;
+  static const double topAppbarIconSize = 22;
   static const double topAppbarButtonIconSize = 24;
   static const double topAppbarHeight = (topAppbarButtonSize + topAppbarTopPadding + topAppbarBottomPadding);
   static const double appbarHeightWithChild = (topAppbarHeight + searchBoxBackButtonSize + topAppbarTopPadding + 14);
@@ -16,6 +17,9 @@ class Dimens {
 
   // :: BlurContainer
   static const double blurContainerSigma = 5;
+
+  // :: Home page.
+  static const double sliverAppbarFullHeight = 480;
 
   // :: Settings page.
   static const double settingsItemsIconSize = 22;
