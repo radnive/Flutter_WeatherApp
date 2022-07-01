@@ -5,7 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:text_marquee/text_marquee.dart';
 import 'package:weather_app/components/blur_container.dart';
 import 'package:weather_app/components/home_page_refresh_indicator.dart';
-import 'package:weather_app/components/message.dart';
 import 'package:weather_app/components/shadow.dart';
 import 'package:weather_app/components/shimmer_loading.dart';
 import 'package:weather_app/components/top_app_bar.dart';
@@ -53,6 +52,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
 
   /// Hold current weather conditions data.
   CurrentWeather _currentWeather = CurrentWeather.empty();
+  /// Hold hourly weather forecasts data.
+  List<HourlyForecast> _hourlyForecastsList = [];
 
   @override
   void initState() {
@@ -203,6 +204,11 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     );
   }
 
+  /// Build divider line.
+  SliverToBoxAdapter _buildDivider() => SliverToBoxAdapter(
+    child: Divider(thickness: 1, color: _palette.divider, height: 1)
+  );
+
   @override
   Widget build(BuildContext context) {
     // Get resources.
@@ -223,7 +229,16 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
               Positioned.fill(
                 child: CustomScrollView(
                   slivers: [
-                    _buildSliverAppBar(context)
+                    _buildSliverAppBar(context),
+                    _buildDivider(), // -----------------
+                    SliverToBoxAdapter(
+                      child: _HourlyWeatherForecast(
+                        forecasts: _hourlyForecastsList,
+                        isOnLoading: _isOnLoading,
+                        isDataUnavailable: _isDataUnavailable
+                      ),
+                    ),
+                    _buildDivider(), // -----------------
                   ]
                 )
               ),
@@ -289,6 +304,10 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     DataRefreshState currentWeatherState = await _getCurrentWeatherConditions();
     if(currentWeatherState != DataRefreshState.success) return currentWeatherState;
 
+    // :: Send GET hourly weather forecasts request.
+    DataRefreshState hourlyForecastState = await _getHourlyForecast();
+    if (hourlyForecastState != DataRefreshState.success) return currentWeatherState;
+
     // :: If no error happened return success state.
     return DataRefreshState.success;
   }
@@ -310,6 +329,25 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       return DataRefreshState.success;
     } else {
       return (currentWeatherRes.statusCode == Internet.exceededRequestNumberStatusCode)?
+        DataRefreshState.noResponse : DataRefreshState.error;
+    }
+  }
+  /// Get hourly weather forecast from AccuWeather API.
+  Future<DataRefreshState> _getHourlyForecast() async {
+    // Send request and get response.
+    final hourlyForecastRes = await http.get(Urls.hourlyForecast(
+      _pinnedLocation!.locationKey,
+      isMetric: _userSettings.temperatureUnit.isMetric
+    ));
+
+    // Manage response.
+    if (hourlyForecastRes.statusCode == 200) {
+      // Convert and save received data.
+      _hourlyForecastsList = HourlyForecast.fromJsonArrayRes(jsonDecode(hourlyForecastRes.body));
+      // Return success state.
+      return DataRefreshState.success;
+    } else {
+      return (hourlyForecastRes.statusCode == Internet.exceededRequestNumberStatusCode)?
         DataRefreshState.noResponse : DataRefreshState.error;
     }
   }
@@ -570,6 +608,128 @@ class _WeatherInfoItem extends StatelessWidget {
               style: _types.bodyText2!.apply(color: _palette.onBackground)
             )
           ],
+        )
+      ],
+    );
+  }
+}
+
+// :: HourlyWeatherForecast
+class _HourlyWeatherForecast extends StatelessWidget {
+  final List<HourlyForecast> forecasts;
+  final bool isOnLoading;
+  final bool isDataUnavailable;
+  const _HourlyWeatherForecast({
+    Key? key,
+    required this.forecasts,
+    this.isOnLoading = false,
+    this.isDataUnavailable = false
+  }) : super(key: key);
+
+  /// Build shimmer style.
+  ShimmerLoading _buildShimmer() {
+    List<Widget> items = [];
+    for (int index = 0; index < 12; index++) {
+      items.add(_HourlyForecastItem.shimmer());
+      if (index != 11) { items.add(const SizedBox(width: 32)); }
+    }
+    return ShimmerLoading(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [ Row(children: items) ],
+      ),
+    );
+  }
+
+  /// Build unavailable style.
+  Column _buildUnavailable() {
+    List<Widget> items = [];
+    for (int index = 0; index < 12; index++) {
+      items.add(_HourlyForecastItem.unavailable());
+      if (index != 11) { items.add(const SizedBox(width: 32)); }
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [ Row(children: items) ],
+    );
+  }
+
+  /// Build weather forecast items.
+  Column _buildForecastList() {
+    List<Widget> items = [];
+    for (int index = 0; index < forecasts.length; index++) {
+      HourlyForecast hf = forecasts[index];
+      items.add(_HourlyForecastItem(
+        icon: ImageAssets.weatherIcons[hf.weatherIcon],
+        time: hf.date.timeStr,
+        temperature: hf.temperature.toInt(),
+        isDataUnavailable: isDataUnavailable,
+      ));
+      if (index != forecasts.length - 1) { items.add(const SizedBox(width: 32)); }
+    }
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [ Row(children: items) ],
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return SingleChildScrollView(
+      scrollDirection: Axis.horizontal,
+      padding: const EdgeInsets.symmetric(vertical: 40, horizontal: Dimens.horizontalPadding),
+      child: (isOnLoading)? _buildShimmer() : (isDataUnavailable)? _buildUnavailable() : _buildForecastList(),
+    );
+  }
+}
+
+class _HourlyForecastItem extends StatelessWidget {
+  final String time;
+  final String icon;
+  final int temperature;
+  final bool isOnLoading;
+  final bool isDataUnavailable;
+  const _HourlyForecastItem({
+    Key? key,
+    this.time = '',
+    this.icon = '',
+    this.temperature = 0,
+    this.isOnLoading = false,
+    this.isDataUnavailable = false
+  }) : super(key: key);
+
+  factory _HourlyForecastItem.shimmer() => const _HourlyForecastItem(isOnLoading: true);
+  factory _HourlyForecastItem.unavailable() => const _HourlyForecastItem(isDataUnavailable: true);
+
+  /// Build shimmer style.
+  Column _buildShimmer() => Column(
+    children: [
+      ShimmerContainer(width: 40, height: 14, color: _palette.background),
+      const SizedBox(height: 5),
+      ShimmerContainer(width: 30, height: 20, color: _palette.background),
+      const SizedBox(height: 16),
+      ShimmerContainer(width: 24, height: 24, color: _palette.background)
+    ]
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return (isOnLoading)? _buildShimmer() : Column(
+      children: [
+        Text(
+          (isDataUnavailable)? '---' : time,
+          style: _types.caption!.apply(color: _palette.subtitle)
+        ),
+        const SizedBox(height: 8),
+        Text(
+          '${(isDataUnavailable)? 'x' : temperature}°',
+          style: _types.headline6!.apply(color: _palette.onBackground)
+        ),
+        const SizedBox(height: 16),
+        Image.asset(
+          (isDataUnavailable)? ImageAssets.unknownWeatherIcon : icon,
+          width: Dimens.hourlyWeatherIconSize,
+          height: Dimens.hourlyWeatherIconSize
         )
       ],
     );

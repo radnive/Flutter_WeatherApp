@@ -74,3 +74,30 @@ class CurrentWeather {
   factory CurrentWeather.fromJson(Map<String, dynamic> json) => _$CurrentWeatherFromJson(json);
   Map<String, dynamic> toJson() => _$CurrentWeatherToJson(this);
 }
+
+@JsonSerializable()
+class HourlyForecast {
+  final DateTime dateTime;
+  Date get date => Date(dateTime);
+  final int weatherIcon;
+  final double temperature;
+
+  HourlyForecast({required this.dateTime, this.weatherIcon = 0, this.temperature = 0});
+
+  factory HourlyForecast.fromJsonRes(Map<String, dynamic> json) => HourlyForecast(
+    dateTime: DateTime.fromMillisecondsSinceEpoch(json['EpochDateTime'] * 1000, isUtc: false),
+    weatherIcon: json['WeatherIcon'],
+    temperature: json['Temperature']['Value']
+  );
+
+  static List<HourlyForecast> fromJsonArrayRes(List<dynamic> jsonArray) {
+    List<HourlyForecast> list = [];
+    for(Map<String, dynamic> hf in jsonArray) {
+      list.add(HourlyForecast.fromJsonRes(hf));
+    }
+    return list;
+  }
+
+  factory HourlyForecast.fromJson(Map<String, dynamic> json) => _$HourlyForecastFromJson(json);
+  Map<String, dynamic> toJson() => _$HourlyForecastToJson(this);
+}

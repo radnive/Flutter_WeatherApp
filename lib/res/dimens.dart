@@ -22,6 +22,7 @@ class Dimens {
   static const double sliverAppbarFullHeight = 480;
   static const double weatherConditionsInfoIconSize = 24;
   static const double weatherInfoDividerSize = 24;
+  static const double hourlyWeatherIconSize = 24;
 
   // :: HomePageRefreshIndicator
   static const double refreshIndicatorOffsetToArmed = 136;

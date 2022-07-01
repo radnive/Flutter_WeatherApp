@@ -47,3 +47,17 @@ Map<String, dynamic> _$CurrentWeatherToJson(CurrentWeather instance) =>
       'pressureInHg': instance.pressureInHg,
       'pressureMb': instance.pressureMb,
     };
+
+HourlyForecast _$HourlyForecastFromJson(Map<String, dynamic> json) =>
+    HourlyForecast(
+      dateTime: DateTime.parse(json['dateTime'] as String),
+      weatherIcon: json['weatherIcon'] as int? ?? 0,
+      temperature: (json['temperature'] as num?)?.toDouble() ?? 0,
+    );
+
+Map<String, dynamic> _$HourlyForecastToJson(HourlyForecast instance) =>
+    <String, dynamic>{
+      'dateTime': instance.dateTime.toIso8601String(),
+      'weatherIcon': instance.weatherIcon,
+      'temperature': instance.temperature,
+    };

@@ -43,4 +43,10 @@ class Urls {
     // Create Uri.
     return Uri.parse('$baseUrl/currentconditions/v1/$locationKey?${ApiKeys.accuweather}$lang$getDetails');
   }
+
+  /// Get hourly forecast.
+  static Uri hourlyForecast(String locationKey, { required bool isMetric }) {
+    final String useMetric = (isMetric)? '&metric=true' : '';
+    return Uri.parse('$baseUrl/forecasts/v1/hourly/12hour/$locationKey?${ApiKeys.accuweather}$useMetric');
+  }
 }
