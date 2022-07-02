@@ -49,8 +49,7 @@ void notifySavedLocationsList() => _savedLocationsChangeNotifier.value = !_saved
 // :: For _SearchResultList.
 late _SearchResultNotifier _searchChangeNotifier;
 // :: For _PopularLocationsList.
-late ValueNotifier<List<PopularLocation>> _popularLocationsChangeNotifier;
-void notifyPopularLocationsList(List<PopularLocation> locations) => _popularLocationsChangeNotifier.value = locations;
+late _PopularLocationsNotifier _popularLocationsChangeNotifier;
 
 // ManageLocations page.
 class ManageLocations extends StatelessWidget {
@@ -75,7 +74,7 @@ class ManageLocations extends StatelessWidget {
     _searchTextFieldController = TextEditingController();
     // Create ValueNotifiers.
     _savedLocationsChangeNotifier = ValueNotifier<bool>(false);
-    _popularLocationsChangeNotifier = ValueNotifier<List<PopularLocation>>([]);
+    _popularLocationsChangeNotifier = _PopularLocationsNotifier(_PopularLocationsData());
     _searchChangeNotifier = _SearchResultNotifier(_SearchResultData());
     return super.createElement();
   }
@@ -764,10 +763,10 @@ class _PopularLocationsList extends StatelessWidget {
   Wrap _buildWrapOfLocations() {
     List<InkWell> items = [];
     bool isEn = _strings.locale == 'en';
-    int citiesCount = _popularLocationsChangeNotifier.value.length;
+    int citiesCount = _popularLocationsChangeNotifier.data.locations.length;
     int maxCount = (citiesCount >= 27)? 27 : citiesCount;
     for(int index = 0; index < maxCount; index++) {
-      PopularLocation pc = _popularLocationsChangeNotifier.value[index];
+      PopularLocation pc = _popularLocationsChangeNotifier.data.locations[index];
       items.add(InkWell(
         onTap: () {
           // Get name based on current language.
@@ -804,8 +803,8 @@ class _PopularLocationsList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // If popular locations list is empty.
-    if (_popularLocationsChangeNotifier.value.isEmpty) {
+    // If popular locations list is empty and the request doesn't be sent.
+    if (_popularLocationsChangeNotifier.shouldRequestSend) {
       // Send GET popular locations request after check internet connection.
       Internet.check(context, ifConnected: () => _getPopularLocations(context));
     }
@@ -828,7 +827,7 @@ class _PopularLocationsList extends StatelessWidget {
                 style: _types.subtitle1!.apply(color: _palette.onBackground)
               ),
               const SizedBox(height: 24),
-              (_popularLocationsChangeNotifier.value.isEmpty)? _buildShimmerList() : _buildWrapOfLocations()
+              (_popularLocationsChangeNotifier.data.locations.isEmpty)? _buildShimmerList() : _buildWrapOfLocations()
             ],
           )
         );
@@ -838,16 +837,47 @@ class _PopularLocationsList extends StatelessWidget {
 
   /// Get popular locations from AccuWeather API.
   void _getPopularLocations(BuildContext context) {
+    // Set request status on Notifier.
+    _popularLocationsChangeNotifier.isRequestSent(true);
     // Send GET request.
     Internet.get(context,
       uri: Urls.popularLocations(),
+      onComplete: (isOkay) {
+        _popularLocationsChangeNotifier.isRequestSent(isOkay);
+      },
       onResponse: (response) {
         // Show popular locations.
-        notifyPopularLocationsList(
+        _popularLocationsChangeNotifier.setLocations(
           PopularLocation.fromJsonArray(jsonDecode(response.body))
         );
       }
     );
+  }
+}
+
+// :::: PopularLocationsList Notifier.
+/// Custom ValueNotifier data model for PopularLocationsList.
+class _PopularLocationsData {
+  bool isRequestSent = false;
+  List<PopularLocation> locations = const [];
+  _PopularLocationsData();
+}
+
+/// Custom ValueNotifier for PopularLocationsList.
+class _PopularLocationsNotifier extends ValueNotifier<_PopularLocationsData> {
+  final _PopularLocationsData data;
+  _PopularLocationsNotifier(this.data) : super(data);
+
+  /// If locationsList is empty and the request doesn't be send, the request should send.
+  bool get shouldRequestSend => data.locations.isEmpty && !data.isRequestSent;
+
+  /// Set request status.
+  void isRequestSent(bool isIt) => data.isRequestSent = isIt;
+
+  /// Update locations list.
+  void setLocations(List<PopularLocation> locations) {
+    data.locations = locations;
+    notifyListeners();
   }
 }
 
@@ -1035,7 +1065,7 @@ class _SearchResultItemState extends State<_SearchResultItem> {
 }
 
 // :::: SearchResultList Notifier.
-/// Custom ValueNotifier data model.
+/// Custom ValueNotifier data model for SearchResultList.
 class _SearchResultData {
   bool isOnLoadData = true;
   String searchQuery = '';
