@@ -34,42 +34,29 @@ enum VisibilityUnit {
 class Settings {
   @Id(assignable: true)
   int id;
-  int _temperatureUnit;
-  int _windSpeedUnit;
-  int _visibilityUnit;
-  int _language;
-  int _themeMode;
+  int temperatureUnit;
+  int windSpeedUnit;
+  int visibilityUnit;
+  int language;
+  int themeMode;
   bool autoUpdate;
 
   // Create settings.
   Settings({
-    int temperatureUnit = 0,
-    int windSpeedUnit = 0,
-    int visibilityUnit = 0,
-    int language = 1,
-    int themeMode = 1,
+    this.temperatureUnit = 0,
+    this.windSpeedUnit = 0,
+    this.visibilityUnit = 0,
+    this.language = 1,
+    this.themeMode = 1,
     this.autoUpdate = false
-  }) :
-    id = 9,
-    _temperatureUnit = temperatureUnit,
-    _windSpeedUnit = windSpeedUnit,
-    _visibilityUnit = visibilityUnit,
-    _language = language,
-    _themeMode = themeMode;
+  }) : id = 9;
 
   // Get user settings index.
-  int get temperatureUnitIndex => _temperatureUnit;
-  int get windSpeedUnitIndex => _windSpeedUnit;
-  int get visibilityUnitIndex => _visibilityUnit;
-  int get languageIndex => _language;
-  int get themeModeIndex => _themeMode;
-
-  // Get user settings.
-  TemperatureUnit get temperatureUnit => TemperatureUnit.get(_temperatureUnit);
-  WindSpeedUnit get windSpeedUnit => WindSpeedUnit.get(_windSpeedUnit);
-  VisibilityUnit get visibilityUnit => VisibilityUnit.get(_visibilityUnit);
-  Language get language => Language.get(_language);
-  ThemeMode get themeMode => ThemeMode.values[_themeMode];
+  TemperatureUnit get getTemperatureUnit => TemperatureUnit.get(temperatureUnit);
+  WindSpeedUnit get getWindSpeedUnit => WindSpeedUnit.get(windSpeedUnit);
+  VisibilityUnit get getVisibilityUnit => VisibilityUnit.get(visibilityUnit);
+  Language get getLanguage => Language.get(language);
+  ThemeMode get getThemeMode => ThemeMode.values[themeMode];
 
   // Update part of user settings object.
   Settings apply({
@@ -80,23 +67,23 @@ class Settings {
     int? themeMode,
     bool? autoUpdate
   }) {
-    if (temperatureUnit != null) { _temperatureUnit = temperatureUnit; }
-    if (windSpeedUnit != null) { _windSpeedUnit = windSpeedUnit; }
-    if (visibilityUnit != null) { _visibilityUnit = visibilityUnit; }
-    if (language != null) { _language = language; }
-    if (themeMode != null) { _themeMode = themeMode; }
+    if (temperatureUnit != null) { this.temperatureUnit = temperatureUnit; }
+    if (windSpeedUnit != null) { this.windSpeedUnit = windSpeedUnit; }
+    if (visibilityUnit != null) { this.visibilityUnit = visibilityUnit; }
+    if (language != null) { this.language = language; }
+    if (themeMode != null) { this.themeMode = themeMode; }
     if (autoUpdate != null) { this.autoUpdate = autoUpdate; }
     return this;
   }
 
   // Just copy.
   Settings copy() => Settings(
-    temperatureUnit: _temperatureUnit,
-    windSpeedUnit: _windSpeedUnit,
-    visibilityUnit: _visibilityUnit,
-    language: _language,
-    themeMode: _themeMode,
-    autoUpdate: autoUpdate,
+    temperatureUnit: temperatureUnit,
+    windSpeedUnit: windSpeedUnit,
+    visibilityUnit: visibilityUnit,
+    language: language,
+    themeMode: themeMode,
+    autoUpdate: autoUpdate
   );
 
   // Copy settings with new properties value.
@@ -109,12 +96,12 @@ class Settings {
     bool? autoUpdate
   }) {
     return Settings(
-      temperatureUnit: (temperatureUnit != null)? temperatureUnit : _temperatureUnit,
-      windSpeedUnit: (windSpeedUnit != null)? windSpeedUnit : _windSpeedUnit,
-      visibilityUnit: (visibilityUnit != null)? visibilityUnit : _visibilityUnit,
-      language: (language != null)? language : _language,
-      themeMode: (themeMode != null)? themeMode : _themeMode,
-      autoUpdate: (autoUpdate != null)? autoUpdate : this.autoUpdate,
+      temperatureUnit: (temperatureUnit != null)? temperatureUnit : this.temperatureUnit,
+      windSpeedUnit: (windSpeedUnit != null)? windSpeedUnit : this.windSpeedUnit,
+      visibilityUnit: (visibilityUnit != null)? visibilityUnit : this.visibilityUnit,
+      language: (language != null)? language : this.language,
+      themeMode: (themeMode != null)? themeMode : this.themeMode,
+      autoUpdate: (autoUpdate != null)? autoUpdate : this.autoUpdate
     );
   }
 

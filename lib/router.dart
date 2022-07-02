@@ -124,11 +124,13 @@ class AppRouterDelegate extends RouterDelegate<AppRoutePath> with
     if(_currentRoute.isSettings) {
       // Tell Settings page that back button pressed.
       settingsPageGlobalKey.currentState?.onBackPressed();
+      return true;
     }
 
     if(_currentRoute.isManageLocations) {
       // Tell Settings page that back button pressed.
       manageLocationsAppBarPageGlobalKey.currentState?.onBackPressed();
+      return true;
     }
 
     // :: Check for back button availability.

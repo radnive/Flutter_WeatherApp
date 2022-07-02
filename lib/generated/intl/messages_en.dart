@@ -100,6 +100,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "Please check your internet connection."),
         "noInternetErrorMessageTitle":
             MessageLookupByLibrary.simpleMessage("No internet connection!"),
+        "noSavedDataForLocationErrorMessageSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "There is no data for this location."),
+        "noSavedDataForLocationErrorMessageTitle":
+            MessageLookupByLibrary.simpleMessage("No data is saved!"),
         "okayButtonText": MessageLookupByLibrary.simpleMessage("Okay"),
         "openWebpageErrorSubtitleMessage": MessageLookupByLibrary.simpleMessage(
             "The web page is unavailable."),
@@ -107,12 +112,18 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unable to open web page!"),
         "otherSettingsTitle":
             MessageLookupByLibrary.simpleMessage("OTHER SETTINGS"),
+        "outOfDateDataWarningMessageSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "Refresh to know the latest conditions."),
+        "outOfDateDataWarningMessageTitle":
+            MessageLookupByLibrary.simpleMessage("Data is out of date!"),
         "pinButtonText": MessageLookupByLibrary.simpleMessage("Pin It"),
         "pinnedTagText": MessageLookupByLibrary.simpleMessage("Pinned"),
         "popularLocationsTitle":
             MessageLookupByLibrary.simpleMessage("Popular Locations"),
         "privacyPolicyItemText":
             MessageLookupByLibrary.simpleMessage("Privacy Policy"),
+        "refreshButtonText": MessageLookupByLibrary.simpleMessage("Refresh"),
         "refreshIndicatorErrorMessage": MessageLookupByLibrary.simpleMessage(
             "We can\'t get data from server!"),
         "refreshIndicatorErrorState":

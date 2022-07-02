@@ -15,6 +15,10 @@
   "somethingWentWrongSubtitle": "در حال حاضر ارتباط با سرور انجام نمی شود.",
   "emptySearchBoxErrorMessageTitle": "یک مورد چیزی را فراموش کردید!",
   "emptySearchBoxErrorMessageSubtitle": "فیلد نام مکان نمی تواند خالی باشد.",
+  "noSavedDataForLocationErrorMessageTitle": "هیچ داده ای وجود ندارد!",
+  "noSavedDataForLocationErrorMessageSubtitle": "برای این مکان، هیچ داده ای ذخیره نشده.",
+  "outOfDateDataWarningMessageTitle": "داده ها بروز نیستند!",
+  "outOfDateDataWarningMessageSubtitle": "برای دریافت آخرین وضعیت بروزرسانی کنید.",
   "unableToAddLocationErrorMessage": "نمی توان \"{name}\" را اضافه کرد.",
   "@unableToAddLocationErrorMessage": {
     "type": "text",
@@ -74,6 +78,7 @@
   "addedButtonText": "اضافه شده",
   "okayButtonText": "باشه",
   "retryButtonText": "تلاش مجدد",
+  "refreshButtonText": "بروزرسانی",
   "locationNotFoundMessageTitle": "چیزی پیدا نشد!",
   "locationNotFoundMessageSubtitle": "هیچ مکانی با این نام پیدا نشد.",
   "emptyListMessageTitle": "لیست خالی است!",

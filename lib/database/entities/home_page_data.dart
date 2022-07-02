@@ -51,6 +51,19 @@ class HomePageData {
       weatherForecasts: weatherForecasts.to<String>((wf) => wf.toJson().toJsonStr)
   );
 
+  /// Look through database for saved data for [locationKey]
+  static bool isDataSavedFor(Database db, String locationKey) {
+    final data = get(db);
+    if(data != null) {
+      return data.locationKey == locationKey;
+    } else {
+      return false;
+    }
+  }
+
+  /// Get saved data from database.
   static HomePageData? get(Database db) => db.store.box<HomePageData>().get(9);
+
+  /// Put new data to database.
   void put(Database db) => db.store.box<HomePageData>().put(this);
 }

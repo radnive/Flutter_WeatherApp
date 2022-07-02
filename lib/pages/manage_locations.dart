@@ -16,6 +16,7 @@ import 'package:weather_app/database/entities/saved_location_entity.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
+import 'package:weather_app/global_keys.dart';
 import 'package:weather_app/models/popular_location.dart';
 import 'package:weather_app/models/search_result_location.dart';
 import 'package:weather_app/res/assets.dart';
@@ -34,6 +35,8 @@ late Database _db;
 late Settings _userSettings;
 
 late TextEditingController _searchTextFieldController;
+late String? _pinnedLocationKey;
+bool _isNewLocationPinned = false;
 
 enum _ListPages { savedLocations, popularLocations, searchResult }
 late PageController _pageController;
@@ -44,9 +47,9 @@ void _jumpToListPage(_ListPages page) => _pageController.jumpToPage(page.index);
 late ValueNotifier<bool> _savedLocationsChangeNotifier;
 void notifySavedLocationsList() => _savedLocationsChangeNotifier.value = !_savedLocationsChangeNotifier.value;
 // :: For _SearchResultList.
-late final _SearchResultNotifier _searchChangeNotifier;
+late _SearchResultNotifier _searchChangeNotifier;
 // :: For _PopularLocationsList.
-late final ValueNotifier<List<PopularLocation>> _popularLocationsChangeNotifier;
+late ValueNotifier<List<PopularLocation>> _popularLocationsChangeNotifier;
 void notifyPopularLocationsList(List<PopularLocation> locations) => _popularLocationsChangeNotifier.value = locations;
 
 // ManageLocations page.
@@ -65,6 +68,8 @@ class ManageLocations extends StatelessWidget {
   StatelessElement createElement() {
     _db = Database();
     _userSettings = Settings.get(_db);
+    // Save pinned location key.
+    _pinnedLocationKey = SavedLocation.pinnedLocation(_db)?.locationKey;
     // Create controllers.
     _pageController = PageController(initialPage: 0);
     _searchTextFieldController = TextEditingController();
@@ -155,7 +160,14 @@ class TopAppBarState extends State<_TopAppBar> {
         _isOnLoadUserLocation = false;
       });
     } else {
-      // TODO Navigate to Home page.
+      // Refresh home page if pinned location changed.
+      if(_isNewLocationPinned) {
+        homePageGlobalKey.currentState?.refresh(
+          isNewLocationPinned: _isNewLocationPinned
+        );
+      }
+      // Navigate to Home page.
+      widget.navigateTo(AppRoutePath.home());
     }
   }
 
@@ -486,7 +498,7 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
     } else {
       // Load saved temperature from database.
       _locationTemperature = '${widget.location.getTemperature(
-        _userSettings.temperatureUnit.isMetric
+        _userSettings.getTemperatureUnit.isMetric
       )}°';
     }
   }
@@ -655,7 +667,7 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
         ).update(_db);
         // Set temperature.
         _locationTemperature = '${widget.location.getTemperature(
-            _userSettings.temperatureUnit.isMetric
+            _userSettings.getTemperatureUnit.isMetric
         )}°';
       } else {
         // Set temperature to x. (It means data is unavailable)
@@ -684,6 +696,8 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
           widget.location.pin(_db);
           // Notify SavedLocationsList.
           notifySavedLocationsList();
+          // Change _isPinnedLocationChanged to TRUE.
+          _isNewLocationPinned = (_pinnedLocationKey != widget.location.locationKey);
         }
       );
     });
@@ -705,6 +719,7 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
         if(SavedLocation.isCollectionEmpty(_db)) {
           notifySavedLocationsList();
         } else if(widget.location.isPinned) {
+          _isNewLocationPinned = true;
           Future.delayed(const Duration(milliseconds: 200))
             .then((_) => notifySavedLocationsList());
         }

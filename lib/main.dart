@@ -36,8 +36,8 @@ void _loadUserSettings(Database db) {
     Settings userSettings = Settings.get(db);
     // Load settings into provider.
     _appearanceChangeProvider = AppearanceChangeProvider(
-      language: userSettings.language,
-      themeMode: userSettings.themeMode
+      language: userSettings.getLanguage,
+      themeMode: userSettings.getThemeMode
     );
   } else {
     // Insert default settings to database.

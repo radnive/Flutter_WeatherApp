@@ -15,6 +15,10 @@
   "somethingWentWrongSubtitle": "We can't connect to server.",
   "emptySearchBoxErrorMessageTitle": "You missed something!",
   "emptySearchBoxErrorMessageSubtitle": "The location text field can't be empty.",
+  "noSavedDataForLocationErrorMessageTitle": "No data is saved!",
+  "noSavedDataForLocationErrorMessageSubtitle": "There is no data for this location.",
+  "outOfDateDataWarningMessageTitle": "Data is out of date!",
+  "outOfDateDataWarningMessageSubtitle": "Refresh to know the latest conditions.",
   "unableToAddLocationErrorMessage": "Unable to add \"{name}\"",
   "@unableToAddLocationErrorMessage": {
     "type": "text",
@@ -74,6 +78,7 @@
   "addedButtonText": "Added",
   "okayButtonText": "Okay",
   "retryButtonText": "Retry",
+  "refreshButtonText": "Refresh",
   "locationNotFoundMessageTitle": "Nothing Found!",
   "locationNotFoundMessageSubtitle": "No location with this name found.",
   "emptyListMessageTitle": "The List Is Empty!",

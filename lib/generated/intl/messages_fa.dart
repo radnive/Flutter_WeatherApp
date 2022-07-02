@@ -102,6 +102,11 @@ class MessageLookup extends MessageLookupByLibrary {
             "لطفا وضعیت اینترنت خود را بررسی کنید."),
         "noInternetErrorMessageTitle": MessageLookupByLibrary.simpleMessage(
             "اتصال به اینترنت برقرار نیست!"),
+        "noSavedDataForLocationErrorMessageSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "برای این مکان، هیچ داده ای ذخیره نشده."),
+        "noSavedDataForLocationErrorMessageTitle":
+            MessageLookupByLibrary.simpleMessage("هیچ داده ای وجود ندارد!"),
         "okayButtonText": MessageLookupByLibrary.simpleMessage("باشه"),
         "openWebpageErrorSubtitleMessage":
             MessageLookupByLibrary.simpleMessage("وبسایت در دسترس نیست."),
@@ -109,12 +114,18 @@ class MessageLookup extends MessageLookupByLibrary {
             "امکان باز کردن وبسایت وجود ندارد!"),
         "otherSettingsTitle":
             MessageLookupByLibrary.simpleMessage("سایر تنظیمات"),
+        "outOfDateDataWarningMessageSubtitle":
+            MessageLookupByLibrary.simpleMessage(
+                "برای دریافت آخرین وضعیت بروزرسانی کنید."),
+        "outOfDateDataWarningMessageTitle":
+            MessageLookupByLibrary.simpleMessage("داده ها بروز نیستند!"),
         "pinButtonText": MessageLookupByLibrary.simpleMessage("سنجاق"),
         "pinnedTagText": MessageLookupByLibrary.simpleMessage("سنجاق شده"),
         "popularLocationsTitle":
             MessageLookupByLibrary.simpleMessage("مکان های پر بازدید"),
         "privacyPolicyItemText":
             MessageLookupByLibrary.simpleMessage("سیاست حفظ حریم خصوصی"),
+        "refreshButtonText": MessageLookupByLibrary.simpleMessage("بروزرسانی"),
         "refreshIndicatorErrorMessage": MessageLookupByLibrary.simpleMessage(
             "امکان دریافت اطلاعات از سرور وجود ندارد!"),
         "refreshIndicatorErrorState":

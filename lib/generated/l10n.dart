@@ -200,6 +200,46 @@ class S {
     );
   }
 
+  /// `No data is saved!`
+  String get noSavedDataForLocationErrorMessageTitle {
+    return Intl.message(
+      'No data is saved!',
+      name: 'noSavedDataForLocationErrorMessageTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `There is no data for this location.`
+  String get noSavedDataForLocationErrorMessageSubtitle {
+    return Intl.message(
+      'There is no data for this location.',
+      name: 'noSavedDataForLocationErrorMessageSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Data is out of date!`
+  String get outOfDateDataWarningMessageTitle {
+    return Intl.message(
+      'Data is out of date!',
+      name: 'outOfDateDataWarningMessageTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refresh to know the latest conditions.`
+  String get outOfDateDataWarningMessageSubtitle {
+    return Intl.message(
+      'Refresh to know the latest conditions.',
+      name: 'outOfDateDataWarningMessageSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Unable to add "{name}"`
   String unableToAddLocationErrorMessage(String name) {
     return Intl.message(
@@ -595,6 +635,16 @@ class S {
     return Intl.message(
       'Retry',
       name: 'retryButtonText',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Refresh`
+  String get refreshButtonText {
+    return Intl.message(
+      'Refresh',
+      name: 'refreshButtonText',
       desc: '',
       args: [],
     );

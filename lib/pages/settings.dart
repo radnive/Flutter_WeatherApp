@@ -9,6 +9,7 @@ import 'package:weather_app/database/database.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
+import 'package:weather_app/global_keys.dart';
 import 'package:weather_app/provider.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
@@ -55,10 +56,14 @@ class SettingsPageState extends State<SettingsPage> {
   // Call when user press back button (TopAppBar/NavigationBar back button)
   void onBackPressed() {
     if(_isHomePageNeedsToRefresh) {
-      // TODO Tell Home page to refresh itself.
+      // Tell Home page to refresh itself.
+      homePageGlobalKey.currentState?.refresh();
     } else if(_isHomePageNeedsToRepaint) {
-      // TODO Tell Home page to repaint itself.
+      // Tell Home page to repaint itself.
+      homePageGlobalKey.currentState?.update();
     }
+    // Navigate to home page.
+    widget.navigateTo(AppRoutePath.home());
   }
 
   // Build item divider.
@@ -111,31 +116,31 @@ class SettingsPageState extends State<SettingsPage> {
                     _TitleItem(title: _strings.unitsSettingsTitle),
                     _MultiSelectItem(
                       title: _strings.temperatureUnitItemText,
-                      text: userSettings.temperatureUnit.text,
+                      text: userSettings.getTemperatureUnit.text,
                       onPressed: () => _showSelectTemperatureUnitBottomSheet(context),
                       topPadding: 16,
                     ),
                     _MultiSelectItem(
                       title: _strings.windSpeedUnitItemText,
-                      text: userSettings.windSpeedUnit.text,
+                      text: userSettings.getWindSpeedUnit.text,
                       onPressed: () => _showSelectWindSpeedUnitBottomSheet(context),
                     ),
                     _MultiSelectItem(
                       title: _strings.visibilityUnitItemText,
-                      text: userSettings.visibilityUnit.name,
+                      text: userSettings.getVisibilityUnit.name,
                       onPressed: () => _showSelectVisibilityUnitBottomSheet(context),
                     ),
                     _buildDivider(), // --------------------------------------
                     _TitleItem(title: _strings.otherSettingsTitle),
                     _MultiSelectItem(
                       title: _strings.languageItemText,
-                      text: _strings.languagesChoiceTitles.split(',')[userSettings.languageIndex],
+                      text: _strings.languagesChoiceTitles.split(',')[userSettings.language],
                       topPadding: 16,
                       onPressed: () => _showSelectLanguageBottomSheet(context),
                     ),
                     _MultiSelectItem(
                       title: _strings.themeItemText,
-                      text: _strings.themeChoiceTitles.split(',')[userSettings.themeModeIndex],
+                      text: _strings.themeChoiceTitles.split(',')[userSettings.themeMode],
                       onPressed: () => _showSelectThemeBottomSheet(context),
                     ),
                     _SwitchItem(
@@ -200,12 +205,12 @@ class SettingsPageState extends State<SettingsPage> {
         title: _strings.temperatureUnitBottomSheetTitle,
         itemTitles: const ['C', 'F'],
         itemSubtitles: _strings.temperatureUnitChoiceSubtitles.split(','),
-        selectedItemIndex: userSettings.temperatureUnitIndex,
+        selectedItemIndex: userSettings.temperatureUnit,
         cancelButtonText: _strings.cancelButtonText,
         onChange: (index) {
           Internet.check(context, ifConnected: () {
             userSettings.apply(temperatureUnit: index).update(db);
-            _isHomePageNeedsToRefresh = (index != _currentSettings.temperatureUnitIndex);
+            _isHomePageNeedsToRefresh = (index != _currentSettings.temperatureUnit);
             setState(() {});
           });
         }
@@ -220,11 +225,11 @@ class SettingsPageState extends State<SettingsPage> {
         title: _strings.windSpeedUnitBottomSheetTitle,
         itemTitles: const ['km/h', 'mi/h'],
         itemSubtitles: _strings.windSpeedUnitChoiceSubtitles.split(','),
-        selectedItemIndex: userSettings.windSpeedUnitIndex,
+        selectedItemIndex: userSettings.windSpeedUnit,
         cancelButtonText: _strings.cancelButtonText,
         onChange: (index) {
           userSettings.apply(windSpeedUnit: index).update(db);
-          _isHomePageNeedsToRepaint = (index != _currentSettings.windSpeedUnitIndex);
+          _isHomePageNeedsToRepaint = (index != _currentSettings.windSpeedUnit);
           setState(() {});
         }
       )
@@ -238,11 +243,11 @@ class SettingsPageState extends State<SettingsPage> {
         title: _strings.visibilityUnitBottomSheetTitle,
         itemTitles: const ['km', 'mi'],
         itemSubtitles: _strings.visibilityUnitChoiceSubtitles.split(','),
-        selectedItemIndex: userSettings.visibilityUnitIndex,
+        selectedItemIndex: userSettings.visibilityUnit,
         cancelButtonText: _strings.cancelButtonText,
         onChange: (index) {
           userSettings.apply(visibilityUnit: index).update(db);
-          _isHomePageNeedsToRepaint = (index != _currentSettings.visibilityUnitIndex);
+          _isHomePageNeedsToRepaint = (index != _currentSettings.visibilityUnit);
           setState(() {});
         }
       )
@@ -253,17 +258,17 @@ class SettingsPageState extends State<SettingsPage> {
     showModalBottomSheet(
         context: context,
         builder: (_) => MultiOptionBottomSheet(
-            title: _strings.languageBottomSheetTitle,
-            itemTitles: _strings.languagesChoiceTitles.split(','),
-            itemSubtitles: _strings.languagesChoiceSubtitles.split(','),
-            selectedItemIndex: userSettings.languageIndex,
-            cancelButtonText: _strings.cancelButtonText,
-            onChange: (index) {
-              userSettings.apply(language: index).update(db);
-              context.appearanceProvider.setLanguage(Language.get(index));
-              _isHomePageNeedsToRefresh = (index != _currentSettings.languageIndex);
-              setState(() {});
-            }
+          title: _strings.languageBottomSheetTitle,
+          itemTitles: _strings.languagesChoiceTitles.split(','),
+          itemSubtitles: _strings.languagesChoiceSubtitles.split(','),
+          selectedItemIndex: userSettings.language,
+          cancelButtonText: _strings.cancelButtonText,
+          onChange: (index) {
+            userSettings.apply(language: index).update(db);
+            context.appearanceProvider.setLanguage(Language.get(index));
+            _isHomePageNeedsToRefresh = (index != _currentSettings.language);
+            setState(() {});
+          }
         )
     );
   }
@@ -275,7 +280,7 @@ class SettingsPageState extends State<SettingsPage> {
             title: _strings.themeBottomSheetTitle,
             itemTitles: _strings.themeChoiceTitles.split(','),
             itemSubtitles: _strings.themeChoiceSubtitles.split(','),
-            selectedItemIndex: userSettings.themeModeIndex,
+            selectedItemIndex: userSettings.themeMode,
             cancelButtonText: _strings.cancelButtonText,
             onChange: (index) {
               userSettings.apply(themeMode: index).update(db);

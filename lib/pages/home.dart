@@ -7,10 +7,12 @@ import 'package:weather_app/components/blur_container.dart';
 import 'package:weather_app/components/home_page_refresh_indicator.dart';
 import 'package:weather_app/components/image_with_shadow.dart';
 import 'package:weather_app/components/linear_progress_bar.dart';
+import 'package:weather_app/components/message.dart';
 import 'package:weather_app/components/shimmer_loading.dart';
 import 'package:weather_app/components/stylish_text.dart';
 import 'package:weather_app/components/top_app_bar.dart';
 import 'package:weather_app/database/database.dart';
+import 'package:weather_app/database/entities/home_page_data.dart';
 import 'package:weather_app/database/entities/saved_location_entity.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
@@ -29,9 +31,11 @@ import 'package:http/http.dart' as http;
 late Database _db;
 late Settings _userSettings;
 late SavedLocation? _pinnedLocation;
+late HomePageData? _savedHomePageData;
 late ColorScheme _palette;
 late TextTheme _types;
 late S _strings;
+late Message _message;
 
 class HomePage extends StatefulWidget {
   final void Function(AppRoutePath routePath) navigateTo;
@@ -75,6 +79,53 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       vsync: this
     );
     super.initState();
+
+    // These lines run after page built.
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      // Check for auto update setting.
+      if(_userSettings.autoUpdate || _savedHomePageData == null) {
+        // Refresh home page.
+        _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
+      } else if(_savedHomePageData != null) {
+        if (_savedHomePageData!.locationKey != _pinnedLocation?.locationKey) {
+          // Show error message.
+          _message.e(
+            title: _strings.noSavedDataForLocationErrorMessageTitle,
+            subtitle: _strings.noSavedDataForLocationErrorMessageSubtitle,
+            buttonText: _strings.refreshButtonText,
+            onButtonPressed: () {
+              // Refresh home page.
+              _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
+            }
+          );
+        } else if(!_savedHomePageData!.isUpToDate) {
+          // Show warning message.
+          _message.w(
+            title: _strings.outOfDateDataWarningMessageTitle,
+            subtitle: _strings.outOfDateDataWarningMessageSubtitle,
+            buttonText: _strings.refreshButtonText,
+            onButtonPressed: () {
+              // Refresh home page.
+              _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
+            }
+          );
+        }
+      }
+    });
+  }
+
+  /// Repaint home page.
+  void update() {
+    _userSettings = Settings.get(_db);
+    setState(() {});
+  }
+
+  /// Refresh home page.
+  void refresh({bool isNewLocationPinned = false}) {
+    _userSettings = Settings.get(_db);
+    if(isNewLocationPinned) _pinnedLocation = SavedLocation.pinnedLocation(_db);
+    // Refresh home page.
+    _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
   }
 
   /// Build TopAppBar.
@@ -232,6 +283,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     _types = Types.of(context);
     _strings = S.of(context);
 
+    // Create message creator.
+    _message = Message(context);
+
+    // Load data from database.
+    _loadDataFromDatabase();
+
     return Scaffold(
       backgroundColor: _palette.background,
       body: AnnotatedRegion(
@@ -295,6 +352,26 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     );
   }
 
+  /// Load saved data from database.
+  void _loadDataFromDatabase() {
+    // Check for saved home page data in database.
+    if(HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey)) {
+      _savedHomePageData = HomePageData.get(_db);
+      // Check saved data is up to date or not!
+      if (_savedHomePageData!.isUpToDate || !_userSettings.autoUpdate) {
+        // Load saved home page data from database.
+        _currentWeather = _savedHomePageData!.savedCurrentWeather;
+        _hourlyForecastsList = _savedHomePageData!.savedHourlyForecasts;
+        _sunStatus = _savedHomePageData!.savedSunStatus;
+        _aqiStatus = AqiStatus.random(_strings.aqiScaleText.split(','));
+        _weatherForecastsList = _savedHomePageData!.savedWeatherForecast;
+
+        // Deactivate unavailable state.
+        _isDataUnavailable = false;
+      }
+    }
+  }
+
   /// Refresh home page data.
   Future<DataRefreshState> _refreshHomePage(BuildContext context) async {
     // Handle errors.
@@ -302,16 +379,37 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       switch(state) {
         // When server requests exceeded.
         case DataRefreshState.noResponse:
-          // TODO Handle no response state.
+          // Show warning message.
+          _message.w(
+            title: _strings.requestsNumberErrorMessageTitle,
+            subtitle: _strings.requestsNumberErrorMessageSubtitle,
+            buttonText: _strings.okayButtonText
+          );
+          // Change state.
+          _isOnLoading = false;
+          _isDataUnavailable = !HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey);
           break;
 
         // When request failed.
         case DataRefreshState.error:
-        // TODO Handle error state.
+          // Show warning message.
+          _message.e(
+            title: _strings.somethingWentWrongTitle,
+            subtitle: _strings.somethingWentWrongSubtitle,
+            buttonText: _strings.retryButtonText,
+            onButtonPressed: () {
+              // Refresh home page.
+              _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
+            }
+          );
+          // Change state.
+          _isOnLoading = false;
+          _isDataUnavailable = !HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey);
           break;
 
         // When everything is normal.
         default:
+          // Change state.
           _isOnLoading = false;
           _isDataUnavailable = false;
           break;
@@ -330,7 +428,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       // Return state.
       return refreshState;
     } catch(_) {
-      // Handle errors.
+      // Handle error.
       handleErrors(DataRefreshState.error);
       // If something went wrong, return error state.
       return DataRefreshState.error;
@@ -361,6 +459,15 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     DataRefreshState next5DaysForecastState = await _getNext5DaysForecast();
     if (next5DaysForecastState != DataRefreshState.success) return currentWeatherState;
 
+    // :: Save all received data to database.
+    HomePageData.from(
+      locationKey: _pinnedLocation!.locationKey,
+      currentWeather: _currentWeather,
+      hourlyForecasts: _hourlyForecastsList,
+      sunStatus: _sunStatus,
+      weatherForecasts: _weatherForecastsList
+    ).put(_db);
+
     // :: If no error happened return success state.
     return DataRefreshState.success;
   }
@@ -390,7 +497,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     // Send request and get response.
     final hourlyForecastRes = await http.get(Urls.hourlyForecast(
       _pinnedLocation!.locationKey,
-      isMetric: _userSettings.temperatureUnit.isMetric
+      isMetric: _userSettings.getTemperatureUnit.isMetric
     ));
 
     // Manage response.
@@ -426,7 +533,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   Future<DataRefreshState> _getNext5DaysForecast() async {
     final weatherForecastRes = await http.get(Urls.weatherForecast(
       _pinnedLocation!.locationKey,
-      isMetric: _userSettings.temperatureUnit.isMetric
+      isMetric: _userSettings.getTemperatureUnit.isMetric
     ));
 
     if (weatherForecastRes.statusCode == 200) {
@@ -561,7 +668,7 @@ class _CurrentWeatherConditions extends StatelessWidget {
             vertical: (_strings.locale == 'en')? 0 : 16
           ),
           child: TextMarquee(
-            '${(isDataUnavailable)? 'x' : currentWeather.getTemperature(_userSettings.temperatureUnit.isMetric)}°',
+            '${(isDataUnavailable)? 'x' : currentWeather.getTemperature(_userSettings.getTemperatureUnit.isMetric)}°',
             style: _types.currentTemperature.apply(color: _palette.onPrimary),
             startPaddingSize: 32
           ),
@@ -598,7 +705,7 @@ class _CurrentWeatherConditions extends StatelessWidget {
         _WeatherInfoItem(
           iconSrc: IconAssets.remixWind,
           title: _strings.windTitle,
-          subtitle: '${currentWeather.getWindSpeed(_userSettings.windSpeedUnit.isMetric)} ${_userSettings.windSpeedUnit.text}',
+          subtitle: '${currentWeather.getWindSpeed(_userSettings.getWindSpeedUnit.isMetric)} ${_userSettings.getWindSpeedUnit.text}',
           isDataUnavailable: isDataUnavailable
         ),
         const SizedBox(height: Dimens.weatherInfoDividerSize),
@@ -612,7 +719,7 @@ class _CurrentWeatherConditions extends StatelessWidget {
         _WeatherInfoItem(
           iconSrc: IconAssets.remixTemperatureHotLine,
           title: _strings.feelsLikeTitle,
-          subtitle: '${currentWeather.getRealFeelTemperature(_userSettings.temperatureUnit.isMetric)}°${_userSettings.temperatureUnit.text}',
+          subtitle: '${currentWeather.getRealFeelTemperature(_userSettings.getTemperatureUnit.isMetric)}°${_userSettings.getTemperatureUnit.text}',
           isDataUnavailable: isDataUnavailable
         ),
         const SizedBox(height: Dimens.weatherInfoDividerSize),
@@ -626,7 +733,7 @@ class _CurrentWeatherConditions extends StatelessWidget {
         _WeatherInfoItem(
           iconSrc: IconAssets.remixEyeLine,
           title: _strings.visibilityTitle,
-          subtitle: '${currentWeather.getVisibility(_userSettings.visibilityUnit.isMetric)} ${_userSettings.visibilityUnit.name}',
+          subtitle: '${currentWeather.getVisibility(_userSettings.getVisibilityUnit.isMetric)} ${_userSettings.getVisibilityUnit.name}',
           isDataUnavailable: isDataUnavailable
         )
       ],
@@ -1464,7 +1571,7 @@ class _WeatherForecastItem extends StatelessWidget {
             children: [
               StylishText(
                 text: '${(isDataUnavailable)? 'x' : forecast.temperature.toInt()}',
-                sup: '°${_userSettings.temperatureUnit.text}',
+                sup: '°${_userSettings.getTemperatureUnit.text}',
                 style: _types.headline4!.apply(color: _palette.onBackground)
               ),
               SizedBox.square(
