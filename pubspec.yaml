@@ -159,6 +159,8 @@ flutter:
     - assets/images/piqo_weather_icons/night_cloudy_thunder.png
     - assets/images/piqo_weather_icons/night_moon_hazy.png
     - assets/images/piqo_weather_icons/unknown_weather_icon.png
+    - assets/images/piqo_weather_icons/high_temperature.png
+    - assets/images/piqo_weather_icons/low_temperature.png
     # :::: Free images
     - assets/images/free_images/light_empty_list.png
     - assets/images/free_images/light_not_found.png

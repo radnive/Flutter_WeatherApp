@@ -69,6 +69,8 @@ class ImageAssets {
   static const String nightCloudySnow = '$_imagesDir/piqo_weather_icons/night_cloudy_snow.png';
   static const String nightCloudyThunder = '$_imagesDir/piqo_weather_icons/night_cloudy_thunder.png';
   static const String nightMoonHazy = '$_imagesDir/piqo_weather_icons/night_moon_hazy.png';
+  static const String highTemperature = '$_imagesDir/piqo_weather_icons/high_temperature.png';
+  static const String lowTemperature = '$_imagesDir/piqo_weather_icons/low_temperature.png';
   static const String unknownWeatherIcon = '$_imagesDir/piqo_weather_icons/unknown_weather_icon.png';
   // :: Free images.
   static const String lightEmptyList = '$_imagesDir/free_images/light_empty_list.png';
@@ -113,8 +115,8 @@ class ImageAssets {
     unknownWeatherIcon, // 27 <- UNKNOWN
     unknownWeatherIcon, // 28 <- UNKNOWN
     dayRainySnowy, // 29
-    unknownWeatherIcon, // 30 <- UNKNOWN
-    unknownWeatherIcon, // 31 <- UNKNOWN
+    highTemperature, // 30
+    lowTemperature, // 31
     daySunWindy, // 32
     nightClear, // 33
     nightCloudy, // 34
