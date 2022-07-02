@@ -2,12 +2,12 @@ import 'dart:convert';
 import 'package:custom_refresh_indicator/custom_refresh_indicator.dart';
 import 'package:dashed_circular_progress_bar/dashed_circular_progress_bar.dart';
 import 'package:flutter/material.dart';
-import 'package:text_marquee/text_marquee.dart';
 import 'package:weather_app/components/blur_container.dart';
 import 'package:weather_app/components/home_page_refresh_indicator.dart';
 import 'package:weather_app/components/image_with_shadow.dart';
 import 'package:weather_app/components/linear_progress_bar.dart';
 import 'package:weather_app/components/message.dart';
+import 'package:weather_app/components/scalable_text.dart';
 import 'package:weather_app/components/shimmer_loading.dart';
 import 'package:weather_app/components/stylish_text.dart';
 import 'package:weather_app/components/top_app_bar.dart';
@@ -85,7 +85,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       // Check for auto update setting.
       if(_userSettings.autoUpdate || _savedHomePageData == null) {
         // Refresh home page.
-        _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
+        _refreshIndicatorKey.currentState?.refresh(draggingDuration: const Duration(milliseconds: 100));
       } else if(_savedHomePageData != null) {
         if (_savedHomePageData!.locationKey != _pinnedLocation?.locationKey) {
           // Show error message.
@@ -663,20 +663,26 @@ class _CurrentWeatherConditions extends StatelessWidget {
             )
           ),
         ),
-        Padding(
-          padding: EdgeInsets.symmetric(
-            vertical: (_strings.locale == 'en')? 0 : 16
-          ),
-          child: TextMarquee(
+        ConstrainedBox(
+          constraints: const BoxConstraints(minHeight: 128),
+          child: ScalableText(
             '${(isDataUnavailable)? 'x' : currentWeather.getTemperature(_userSettings.getTemperatureUnit.isMetric)}°',
             style: _types.currentTemperature.apply(color: _palette.onPrimary),
-            startPaddingSize: 32
+            leftPadding: (_strings.locale == 'en')? 32 : 16,
+            rightPadding: (_strings.locale == 'en')? 16 : 32,
           ),
         ),
-        TextMarquee(
-          (isDataUnavailable)? _strings.unavailableText : currentWeather.weatherText,
-          style: _types.headline6!.apply(color: _palette.onPrimary),
-          startPaddingSize: 32
+        Padding(
+          padding: EdgeInsets.only(
+            left: (_strings.locale == 'en')? 32 : 16,
+            right: (_strings.locale == 'en')? 16 : 32
+          ),
+          child: Text(
+            (isDataUnavailable)? _strings.unavailableText : currentWeather.weatherText,
+            style: _types.headline6!.apply(color: _palette.onPrimary),
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1
+          ),
         ),
         Padding(
           padding: (_strings.locale == 'en')?

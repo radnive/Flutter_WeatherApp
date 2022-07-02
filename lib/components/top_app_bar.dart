@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:text_marquee/text_marquee.dart';
 import 'package:weather_app/components/square_image.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/dimens.dart';
@@ -39,8 +38,8 @@ class TopAppBar {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  TextMarquee(title, style: titleStyle),
-                  TextMarquee(subtitle, style: subtitleStyle)
+                  Text(title, style: titleStyle, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  Text(subtitle, style: subtitleStyle, maxLines: 1, overflow: TextOverflow.ellipsis)
                 ],
               )),
             ],
