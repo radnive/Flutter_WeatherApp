@@ -163,8 +163,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "somethingWentWrongTitle":
             MessageLookupByLibrary.simpleMessage("مشکلی پیش آمده است!"),
         "submitButtonText": MessageLookupByLibrary.simpleMessage("ثبت کن"),
-        "sunStatusDataProviderItemText": MessageLookupByLibrary.simpleMessage(
-            "فراهم آورنده داده های وضعیت خورشید"),
+        "sunStatusDataProviderItemText":
+            MessageLookupByLibrary.simpleMessage("فراهم آورنده داده های آفتاب"),
         "sunriseText": MessageLookupByLibrary.simpleMessage("طلوع"),
         "sunsetText": MessageLookupByLibrary.simpleMessage("غروب"),
         "temperatureUnitBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
