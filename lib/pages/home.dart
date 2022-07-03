@@ -82,23 +82,27 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
 
     // These lines run after page built.
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      // Check for auto update setting.
-      if(_userSettings.autoUpdate || _savedHomePageData == null) {
+      // Check for saved HomePageData.
+      if(_savedHomePageData == null) {
         // Refresh home page.
         _refreshIndicatorKey.currentState?.refresh(draggingDuration: const Duration(milliseconds: 100));
-      } else if(_savedHomePageData != null) {
-        if (_savedHomePageData!.locationKey != _pinnedLocation?.locationKey) {
-          // Show error message.
-          _message.e(
-            title: _strings.noSavedDataForLocationErrorMessageTitle,
-            subtitle: _strings.noSavedDataForLocationErrorMessageSubtitle,
-            buttonText: _strings.refreshButtonText,
-            onButtonPressed: () {
-              // Refresh home page.
-              _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
-            }
-          );
-        } else if(!_savedHomePageData!.isUpToDate) {
+      } else {
+        // Check AutoUpdate state.
+        final bool isAutoUpdateOn = _userSettings.autoUpdate;
+        // Check saved data last update.
+        final bool isDataUpToDate = _savedHomePageData!.isUpToDate;
+        // Compare saved data location key with current pinned location key.
+        final bool isDataAvailable = (_savedHomePageData!.locationKey == _pinnedLocation?.locationKey);
+
+        // If no data available or AutoUpdate is on but data is not up to date,
+        // then refresh the home page.
+        if(!isDataAvailable || (isAutoUpdateOn && !isDataUpToDate)) {
+          // Refresh home page.
+          _refreshIndicatorKey.currentState?.refresh(draggingDuration: const Duration(milliseconds: 100));
+        }
+        // But if data is available but it is not up to date also AutoUpdate is off,
+        // then show warning message.
+        else if(!isAutoUpdateOn && !isDataUpToDate && isDataAvailable) {
           // Show warning message.
           _message.w(
             title: _strings.outOfDateDataWarningMessageTitle,
