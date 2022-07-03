@@ -2,17 +2,19 @@ import 'package:json_annotation/json_annotation.dart';
 import 'package:weather_app/extensions/date.dart';
 part 'weather_conditions.g.dart';
 
+const int nullIconIndexValue = 0;
+
 @JsonSerializable()
 class CurrentWeather {
   final DateTime dateTime;
   Date get date => Date(dateTime);
   final String weatherText;
   final int weatherIcon;
-  final double temperatureC;
-  final double temperatureF;
+  final double? temperatureC;
+  final double? temperatureF;
   final double realFeelTemperatureC;
   final double realFeelTemperatureF;
-  final int humidity;
+  final int? humidity;
   final double windSpeedKmh;
   final double windSpeedMih;
   final int uvIndex;
@@ -22,8 +24,7 @@ class CurrentWeather {
   final double pressureInHg;
   final double pressureMb;
 
-  int getTemperature(bool isMetric) =>
-      ((isMetric)? temperatureC : temperatureF).toInt();
+  double? getTemperature(bool isMetric) => (isMetric)? temperatureC : temperatureF;
   int getRealFeelTemperature(bool isMetric) =>
       ((isMetric)? realFeelTemperatureC : realFeelTemperatureF).toInt();
   int getWindSpeed(bool isMetric) =>
@@ -31,17 +32,18 @@ class CurrentWeather {
   int getVisibility(bool isMetric) =>
       ((isMetric)? visibilityKm : visibilityMi).toInt();
 
+
   factory CurrentWeather.empty() => CurrentWeather(dateTime: DateTime.now());
 
   CurrentWeather({
     required this.dateTime,
     this.weatherText = '--',
     this.weatherIcon = 0,
-    this.temperatureC = 0,
-    this.temperatureF = 0,
+    this.temperatureC,
+    this.temperatureF,
     this.realFeelTemperatureC = 0,
     this.realFeelTemperatureF = 0,
-    this.humidity = 0,
+    this.humidity,
     this.windSpeedKmh = 0,
     this.windSpeedMih = 0,
     this.uvIndex = 0,
@@ -55,12 +57,12 @@ class CurrentWeather {
   factory CurrentWeather.fromJsonRes(Map<String, dynamic> json) => CurrentWeather(
     dateTime: DateTime.fromMillisecondsSinceEpoch(json['EpochTime'] * 1000, isUtc: true),
     weatherText: json['WeatherText'],
-    weatherIcon: json['WeatherIcon'],
-    temperatureC: json['Temperature']['Metric']['Value'],
-    temperatureF: json['Temperature']['Imperial']['Value'],
+    weatherIcon: (json.containsKey('WeatherIcon'))? json['WeatherIcon'] : nullIconIndexValue,
+    temperatureC: (json['Temperature']['Metric'].containsKey('Value'))? json['Temperature']['Metric']['Value'] : null,
+    temperatureF: (json['Temperature']['Imperial'].containsKey('Value'))? json['Temperature']['Imperial']['Value'] : null,
     realFeelTemperatureC: json['RealFeelTemperature']['Metric']['Value'],
     realFeelTemperatureF: json['RealFeelTemperature']['Imperial']['Value'],
-    humidity: json['RelativeHumidity'],
+    humidity: (json.containsKey('RelativeHumidity'))? json['RelativeHumidity'] : null,
     windSpeedKmh: json['Wind']['Speed']['Metric']['Value'],
     windSpeedMih: json['Wind']['Speed']['Imperial']['Value'],
     uvIndex: json['UVIndex'],
@@ -80,14 +82,14 @@ class HourlyForecast {
   final DateTime dateTime;
   Date get date => Date(dateTime);
   final int weatherIcon;
-  final double temperature;
+  final double? temperature;
 
-  HourlyForecast({required this.dateTime, this.weatherIcon = 0, this.temperature = 0});
+  HourlyForecast({required this.dateTime, this.weatherIcon = 0, this.temperature});
 
   factory HourlyForecast.fromJsonRes(Map<String, dynamic> json) => HourlyForecast(
     dateTime: DateTime.fromMillisecondsSinceEpoch(json['EpochDateTime'] * 1000, isUtc: false),
-    weatherIcon: json['WeatherIcon'],
-    temperature: json['Temperature']['Value']
+    weatherIcon: (json.containsKey('WeatherIcon'))? json['WeatherIcon'] : nullIconIndexValue,
+    temperature: (json['Temperature'].containsKey('Value'))? json['Temperature']['Value'] : null
   );
 
   static List<HourlyForecast> fromJsonArrayRes(List<dynamic> jsonArray) {
@@ -154,21 +156,22 @@ class SunStatus {
 class WeatherForecast {
   final DateTime dateTime;
   Date get date => Date(dateTime);
-  final double temperature;
+  final double? temperature;
   final int iconIndex;
   const WeatherForecast({
     required this.dateTime,
-    this.temperature = 0,
+    this.temperature,
     this.iconIndex = 0
   });
 
   factory WeatherForecast.empty() => WeatherForecast(dateTime: DateTime.now());
 
   factory WeatherForecast.fromJsonRes(Map<String, dynamic> json) => WeatherForecast(
-      dateTime: DateTime.fromMillisecondsSinceEpoch(json['EpochDate'] * 1000, isUtc: true),
-      temperature: json['Temperature']['Maximum']['Value'],
-      iconIndex: json['Day']['Icon']
+    dateTime: DateTime.fromMillisecondsSinceEpoch(json['EpochDate'] * 1000, isUtc: true),
+    temperature: (json['Temperature']['Maximum'].containsKey('Value'))? json['Temperature']['Maximum']['Value'] : null,
+    iconIndex: json['Day']['Icon']
   );
+
   static List<WeatherForecast> fromJsonArrayRes(Map<String, dynamic> json) {
     List<WeatherForecast> items = [];
     List<dynamic> jsonArray = json['DailyForecasts'];

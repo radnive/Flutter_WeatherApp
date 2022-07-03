@@ -20,9 +20,9 @@ class SearchResultLocation {
   /// Convert json object to [SearchResultLocation] object.
   factory SearchResultLocation.fromJson(Map<String, dynamic> json, Database db) => SearchResultLocation(
     locationKey: json['Key'],
-    name: json['LocalizedName'],
-    province: json['AdministrativeArea']['LocalizedName'],
-    country: json['Country']['LocalizedName'],
+    name: json[(json['LocalizedName'].isEmpty)? 'EnglishName' : 'LocalizedName'],
+    province: json['AdministrativeArea'][(json['AdministrativeArea']['LocalizedName'].isEmpty)? 'EnglishName' : 'LocalizedName'],
+    country: json['Country'][(json['Country']['LocalizedName'].isEmpty)? 'EnglishName' : 'LocalizedName'],
     isAdded: SavedLocation.isAdded(db, locationKey: json['Key'])
   );
 

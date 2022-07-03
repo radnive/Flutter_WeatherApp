@@ -11,13 +11,13 @@ CurrentWeather _$CurrentWeatherFromJson(Map<String, dynamic> json) =>
       dateTime: DateTime.parse(json['dateTime'] as String),
       weatherText: json['weatherText'] as String? ?? '--',
       weatherIcon: json['weatherIcon'] as int? ?? 0,
-      temperatureC: (json['temperatureC'] as num?)?.toDouble() ?? 0,
-      temperatureF: (json['temperatureF'] as num?)?.toDouble() ?? 0,
+      temperatureC: (json['temperatureC'] as num?)?.toDouble(),
+      temperatureF: (json['temperatureF'] as num?)?.toDouble(),
       realFeelTemperatureC:
           (json['realFeelTemperatureC'] as num?)?.toDouble() ?? 0,
       realFeelTemperatureF:
           (json['realFeelTemperatureF'] as num?)?.toDouble() ?? 0,
-      humidity: json['humidity'] as int? ?? 0,
+      humidity: json['humidity'] as int?,
       windSpeedKmh: (json['windSpeedKmh'] as num?)?.toDouble() ?? 0,
       windSpeedMih: (json['windSpeedMih'] as num?)?.toDouble() ?? 0,
       uvIndex: json['uvIndex'] as int? ?? 0,
@@ -52,7 +52,7 @@ HourlyForecast _$HourlyForecastFromJson(Map<String, dynamic> json) =>
     HourlyForecast(
       dateTime: DateTime.parse(json['dateTime'] as String),
       weatherIcon: json['weatherIcon'] as int? ?? 0,
-      temperature: (json['temperature'] as num?)?.toDouble() ?? 0,
+      temperature: (json['temperature'] as num?)?.toDouble(),
     );
 
 Map<String, dynamic> _$HourlyForecastToJson(HourlyForecast instance) =>
@@ -79,7 +79,7 @@ Map<String, dynamic> _$SunStatusToJson(SunStatus instance) => <String, dynamic>{
 WeatherForecast _$WeatherForecastFromJson(Map<String, dynamic> json) =>
     WeatherForecast(
       dateTime: DateTime.parse(json['dateTime'] as String),
-      temperature: (json['temperature'] as num?)?.toDouble() ?? 0,
+      temperature: (json['temperature'] as num?)?.toDouble(),
       iconIndex: json['iconIndex'] as int? ?? 0,
     );
 

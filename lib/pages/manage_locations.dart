@@ -770,7 +770,7 @@ class _PopularLocationsList extends StatelessWidget {
       items.add(InkWell(
         onTap: () {
           // Get name based on current language.
-          String cityName = (isEn)? pc.nameEn : pc.namePer;
+          String cityName = (isEn || pc.namePer.isEmpty)? pc.nameEn : pc.namePer;
           // Change SearchBox TextField's text.
           _searchTextFieldController.text = cityName;
           // Jump to _SearchResultList.
@@ -785,7 +785,7 @@ class _PopularLocationsList extends StatelessWidget {
             borderRadius: BorderRadius.circular(Dimens.smallShapesBorderRadius)
           ),
           child: Text(
-            (isEn)? pc.nameEn : pc.namePer,
+            (isEn || pc.namePer.isEmpty)? pc.nameEn : pc.namePer,
             style: _types.subtitle1!.apply(color: _palette.onBackground)
           ),
         ),
