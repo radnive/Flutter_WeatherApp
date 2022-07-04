@@ -695,7 +695,7 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
           widget.location.pin(_db);
           // Notify SavedLocationsList.
           notifySavedLocationsList();
-          // Change _isPinnedLocationChanged to TRUE.
+          // Change _isPinnedLocationChanged to TRUE if pinned location changed.
           _isNewLocationPinned = (_pinnedLocationKey != widget.location.locationKey);
         }
       );
@@ -718,6 +718,7 @@ class _SavedLocationItemState extends State<_SavedLocationItem> {
         if(SavedLocation.isCollectionEmpty(_db)) {
           notifySavedLocationsList();
         } else if(widget.location.isPinned) {
+          // Change _isPinnedLocationChanged to TRUE.
           _isNewLocationPinned = true;
           Future.delayed(const Duration(milliseconds: 200))
             .then((_) => notifySavedLocationsList());
@@ -1055,6 +1056,8 @@ class _SearchResultItemState extends State<_SearchResultItem> {
       uri: Urls.searchLocationByKey(widget.location.locationKey),
       onComplete: (_) => setState(() => _isOnLoadData = false),
       onResponse: (response) {
+        // Change _isPinnedLocationChanged to TRUE if savedLocation collection is empty.
+        _isNewLocationPinned = SavedLocation.isCollectionEmpty(_db);
         // Save to database.
         SavedLocation.fromJson(jsonDecode(response.body)).put(_db);
         // Change location add status.
