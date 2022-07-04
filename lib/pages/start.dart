@@ -1,6 +1,5 @@
 import 'dart:math';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:weather_app/generated/l10n.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
@@ -23,16 +22,12 @@ class StartPage extends StatelessWidget {
     _types = Types.of(context);
     _strings = S.of(context);
 
-    // Make app full screen.
-    SystemChrome.setEnabledSystemUIMode(SystemUiMode.edgeToEdge, overlays: SystemUiOverlay.values);
-
     // Create page.
     return Scaffold(
       backgroundColor: _palette.skyBlueColor,
-      resizeToAvoidBottomInset: false,
       body: AnnotatedRegion(
         value: Theme.of(context).uiOverlayStyle.copyWith(
-          systemNavigationBarColor: Colors.transparent
+          systemNavigationBarColor: _palette.skyBlueColor
         ),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
