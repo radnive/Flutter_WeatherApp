@@ -251,20 +251,22 @@ class TopAppBarState extends State<_TopAppBar> {
     readOnly: _isReadOnly,
     style: _types.subtitle1!.apply(color: _palette.onBackground),
     onTap: () {
-      // Set TextField read only. (If internet connection lost it remains read only)
-      _isReadOnly = true;
+      if(_pageController.page == 0) {
+        // Set TextField read only. (If internet connection lost it remains read only)
+        _isReadOnly = true;
 
-      // Check for internet connection.
-      Internet.check(context, ifConnected: () {
-        // Disable NavigationBar back button.
-        widget.changeBackButtonStatus(true);
-        // Set TextField editable.
-        _isReadOnly = false;
-        // Jump to _PopularLocationsList.
-        _jumpToListPage(_ListPages.popularLocations);
-        // Collapse AppBar.
-        setState(() => _isCollapsed = true);
-      });
+        // Check for internet connection.
+        Internet.check(context, ifConnected: () {
+          // Disable NavigationBar back button.
+          widget.changeBackButtonStatus(true);
+          // Set TextField editable.
+          _isReadOnly = false;
+          // Jump to _PopularLocationsList.
+          _jumpToListPage(_ListPages.popularLocations);
+          // Collapse AppBar.
+          setState(() => _isCollapsed = true);
+        });
+      }
     },
     onChanged: (text) {
       if(_isOnError && text.isNotEmpty) {
@@ -1056,8 +1058,10 @@ class _SearchResultItemState extends State<_SearchResultItem> {
       uri: Urls.searchLocationByKey(widget.location.locationKey),
       onComplete: (_) => setState(() => _isOnLoadData = false),
       onResponse: (response) {
-        // Change _isPinnedLocationChanged to TRUE if savedLocation collection is empty.
-        _isNewLocationPinned = SavedLocation.isCollectionEmpty(_db);
+        if(!_isNewLocationPinned) {
+          // Change _isPinnedLocationChanged to TRUE if savedLocation collection is empty.
+          _isNewLocationPinned = SavedLocation.isCollectionEmpty(_db);
+        }
         // Save to database.
         SavedLocation.fromJson(jsonDecode(response.body)).put(_db);
         // Change location add status.
