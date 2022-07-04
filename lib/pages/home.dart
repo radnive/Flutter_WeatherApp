@@ -74,6 +74,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     _db = Database();
     _userSettings = Settings.get(_db);
     _pinnedLocation = SavedLocation.pinnedLocation(_db);
+    _savedHomePageData = null;
     _animationController = AnimationController(
       duration: const Duration(milliseconds: 100),
       vsync: this
@@ -568,12 +569,18 @@ class _CurrentWeatherConditions extends StatelessWidget {
   Container _buildWeatherConditionsShimmer() {
     Color color = _palette.onPrimarySubtitle;
     return Container(
-      padding: const EdgeInsets.only(top: Dimens.topAppbarHeight + 48, left: 32),
+      padding: EdgeInsets.only(
+        top: Dimens.topAppbarHeight + 48,
+        left: (_strings.locale == 'en')? 32 : 0,
+        right: (_strings.locale == 'en')? 0 : 32
+      ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Padding(
-            padding: const EdgeInsets.only(right: 48),
+            padding: (_strings.locale == 'en')?
+              const EdgeInsets.only(left: 0, right: 48) :
+              const EdgeInsets.only(left: 48, right: 0),
             child: AspectRatio(
               aspectRatio: 1,
               child: Container(
@@ -597,7 +604,11 @@ class _CurrentWeatherConditions extends StatelessWidget {
   /// Build current weather information shimmer.
   Container _buildWeatherInfoShimmer() {
     return Container(
-      padding: const EdgeInsets.only(top: Dimens.topAppbarHeight, left: 32),
+      padding: EdgeInsets.only(
+        top: Dimens.topAppbarHeight,
+        left: (_strings.locale == 'en')? 32 : 0,
+        right: (_strings.locale == 'en')? 0 : 32
+      ),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -663,8 +674,8 @@ class _CurrentWeatherConditions extends StatelessWidget {
         children: [
           Padding(
             padding: (_strings.locale == 'en')?
-            const EdgeInsets.only(right: 48, left: 32) :
-            const EdgeInsets.only(right: 32, left: 48),
+              const EdgeInsets.only(left: 32, right: 48) :
+              const EdgeInsets.only(left: 48, right: 32),
             child: AspectRatio(
                 aspectRatio: 1,
                 child: ImageWithShadow(
@@ -679,27 +690,27 @@ class _CurrentWeatherConditions extends StatelessWidget {
               style: _types.currentTemperature.apply(color: _palette.onPrimary),
               leftPadding: (_strings.locale == 'en')? 32 : 16,
               rightPadding: (_strings.locale == 'en')? 16 : 32,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(
-                left: (_strings.locale == 'en')? 32 : 16,
-                right: (_strings.locale == 'en')? 16 : 32
-            ),
-            child: Text(
-                (isDataUnavailable)? _strings.unavailableText : currentWeather.weatherText,
-                style: _types.headline6!.apply(color: _palette.onPrimary),
-                overflow: TextOverflow.ellipsis,
-                maxLines: 1
+              alignment: (_strings.locale == 'en')? Alignment.centerLeft : Alignment.centerRight
             ),
           ),
           Padding(
             padding: (_strings.locale == 'en')?
-            const EdgeInsets.only(left: 32) :
-            const EdgeInsets.only(right: 32, top: 8),
+              const EdgeInsets.only(left: 32, right: 8) :
+              const EdgeInsets.only(left: 8, right: 32),
             child: Text(
-                (isDataUnavailable)? _strings.unavailableText : currentWeather.date.toStr(_strings.locale == 'en'),
-                style: _types.caption!.apply(color: _palette.onPrimarySubtitle)
+              (isDataUnavailable)? _strings.unavailableText : currentWeather.weatherText,
+              style: _types.headline6!.apply(color: _palette.onPrimary),
+              overflow: TextOverflow.ellipsis,
+              maxLines: 1
+            ),
+          ),
+          Padding(
+            padding: (_strings.locale == 'en')?
+              const EdgeInsets.only(left: 32, right: 8) :
+              const EdgeInsets.only(left: 8, right: 32, top: 8),
+            child: Text(
+              (isDataUnavailable)? _strings.unavailableText : currentWeather.date.toStr(_strings.locale == 'en'),
+              style: _types.caption!.apply(color: _palette.onPrimarySubtitle)
             ),
           )
         ],
@@ -707,57 +718,54 @@ class _CurrentWeatherConditions extends StatelessWidget {
     );
   }
   /// Build current weather information.
-  Container _buildWeatherInfo() {
-
-    return Container(
-      color: _palette.background,
-      padding: EdgeInsets.only(
-        top: Dimens.topAppbarHeight,
-        left: (_strings.locale == 'en')? 32 : 0,
-        right: (_strings.locale == 'en')? 0 : 32,
-      ),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _WeatherInfoItem(
-              iconSrc: IconAssets.remixWind,
-              title: _strings.windTitle,
-              subtitle: '${currentWeather.getWindSpeed(_userSettings.getWindSpeedUnit.isMetric)} ${_userSettings.getWindSpeedUnit.text}',
-              isDataUnavailable: isDataUnavailable
-          ),
-          const SizedBox(height: Dimens.weatherInfoDividerSize),
-          _WeatherInfoItem(
-              iconSrc: IconAssets.remixSunLine,
-              title: _strings.uvIndexTitle,
-              subtitle: '${currentWeather.uvIndex}',
-              isDataUnavailable: isDataUnavailable
-          ),
-          const SizedBox(height: Dimens.weatherInfoDividerSize),
-          _WeatherInfoItem(
-              iconSrc: IconAssets.remixTemperatureHotLine,
-              title: _strings.feelsLikeTitle,
-              subtitle: '${currentWeather.getRealFeelTemperature(_userSettings.getTemperatureUnit.isMetric)}°${_userSettings.getTemperatureUnit.text}',
-              isDataUnavailable: isDataUnavailable
-          ),
-          const SizedBox(height: Dimens.weatherInfoDividerSize),
-          _WeatherInfoItem(
-              iconSrc: IconAssets.remixDrop,
-              title: _strings.humidityTitle,
-              subtitle: (currentWeather.humidity == null)? '---' : '${currentWeather.humidity}%',
-              isDataUnavailable: isDataUnavailable
-          ),
-          const SizedBox(height: Dimens.weatherInfoDividerSize),
-          _WeatherInfoItem(
-              iconSrc: IconAssets.remixEyeLine,
-              title: _strings.visibilityTitle,
-              subtitle: '${currentWeather.getVisibility(_userSettings.getVisibilityUnit.isMetric)} ${_userSettings.getVisibilityUnit.name}',
-              isDataUnavailable: isDataUnavailable
-          )
-        ],
-      ),
-    );
-  }
+  Container _buildWeatherInfo() => Container(
+    color: _palette.background,
+    padding: EdgeInsets.only(
+      top: Dimens.topAppbarHeight,
+      left: (_strings.locale == 'en')? 32 : 0,
+      right: (_strings.locale == 'en')? 0 : 32,
+    ),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        _WeatherInfoItem(
+            iconSrc: IconAssets.remixWind,
+            title: _strings.windTitle,
+            subtitle: '${currentWeather.getWindSpeed(_userSettings.getWindSpeedUnit.isMetric)} ${_userSettings.getWindSpeedUnit.text}',
+            isDataUnavailable: isDataUnavailable
+        ),
+        const SizedBox(height: Dimens.weatherInfoDividerSize),
+        _WeatherInfoItem(
+            iconSrc: IconAssets.remixSunLine,
+            title: _strings.uvIndexTitle,
+            subtitle: '${currentWeather.uvIndex}',
+            isDataUnavailable: isDataUnavailable
+        ),
+        const SizedBox(height: Dimens.weatherInfoDividerSize),
+        _WeatherInfoItem(
+            iconSrc: IconAssets.remixTemperatureHotLine,
+            title: _strings.feelsLikeTitle,
+            subtitle: '${currentWeather.getRealFeelTemperature(_userSettings.getTemperatureUnit.isMetric)}°${_userSettings.getTemperatureUnit.text}',
+            isDataUnavailable: isDataUnavailable
+        ),
+        const SizedBox(height: Dimens.weatherInfoDividerSize),
+        _WeatherInfoItem(
+            iconSrc: IconAssets.remixDrop,
+            title: _strings.humidityTitle,
+            subtitle: (currentWeather.humidity == null)? '---' : '${currentWeather.humidity}%',
+            isDataUnavailable: isDataUnavailable
+        ),
+        const SizedBox(height: Dimens.weatherInfoDividerSize),
+        _WeatherInfoItem(
+            iconSrc: IconAssets.remixEyeLine,
+            title: _strings.visibilityTitle,
+            subtitle: '${currentWeather.getVisibility(_userSettings.getVisibilityUnit.isMetric)} ${_userSettings.getVisibilityUnit.name}',
+            isDataUnavailable: isDataUnavailable
+        )
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) {

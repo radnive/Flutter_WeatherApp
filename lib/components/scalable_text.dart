@@ -5,9 +5,11 @@ class ScalableText extends StatelessWidget {
   final TextStyle? style;
   final double leftPadding;
   final double rightPadding;
+  final AlignmentGeometry alignment;
   const ScalableText(this.text, {
     Key? key,
     this.style,
+    this.alignment = Alignment.center,
     this.leftPadding = 0,
     this.rightPadding = 0
   }) : super(key: key);
@@ -22,7 +24,7 @@ class ScalableText extends StatelessWidget {
         Expanded(
           child: FittedBox(
             fit: BoxFit.scaleDown,
-            alignment: Alignment.centerLeft,
+            alignment: alignment,
             child: Text(text, style: style, maxLines: 1, textAlign: TextAlign.start)
           )
         ),
