@@ -24,6 +24,8 @@ late ColorScheme _palette;
 late TextTheme _types;
 late S _strings;
 
+const String _appVersion = '1.0.0';
+
 class SettingsPage extends StatefulWidget {
   final void Function(AppRoutePath routePath) navigateTo;
   final void Function(bool isDisabled) changeBackButtonStatus;
@@ -163,7 +165,7 @@ class SettingsPageState extends State<SettingsPage> {
                     _TitleItem(title: _strings.aboutTitle),
                     _TextSettingItem(
                         title: _strings.appVersionItemText,
-                        text: '1.0.5',
+                        text: _appVersion,
                         topPadding: 16
                     ),
                     _TextSettingItem(
