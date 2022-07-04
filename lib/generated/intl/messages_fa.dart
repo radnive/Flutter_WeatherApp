@@ -51,7 +51,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "confirmMessageTitle":
             MessageLookupByLibrary.simpleMessage("آیا مطمئن هستید؟"),
         "contactMeBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
-            "چطوری میخوای با من ارتباط بگیری؟"),
+            "از چه راهی میخواهید با من ارتباط بگیرید؟"),
         "contactMeChoiceSubtitles":
             MessageLookupByLibrary.simpleMessage("اینستاگرام,گیت هاب,دریبل"),
         "contactMeItemText":
@@ -70,7 +70,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "emptySearchBoxErrorMessageTitle": MessageLookupByLibrary.simpleMessage(
             "یک مورد چیزی را فراموش کردید!"),
         "feedbackBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
-            "احساست نسبت به این اپلیکیشن چیست؟"),
+            "احساس شما نسبت به این اپلیکیشن چیست؟"),
         "feedbackItemText": MessageLookupByLibrary.simpleMessage("ثبت بازخورد"),
         "feelsLikeTitle": MessageLookupByLibrary.simpleMessage("دما حسی"),
         "humidityTitle": MessageLookupByLibrary.simpleMessage("رطوبت نسبی"),
@@ -78,8 +78,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("شروع کنیم"),
         "introPageText": MessageLookupByLibrary.simpleMessage(
             "مکانتو باید\nاضافه کنی،\nبزن بریم!"),
-        "languageBottomSheetTitle":
-            MessageLookupByLibrary.simpleMessage("زبان اپلیکیشن رو انتخاب کن"),
+        "languageBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
+            "زبان اپلیکیشن را انتخاب کنید"),
         "languageItemText": MessageLookupByLibrary.simpleMessage("زبان"),
         "languagesChoiceSubtitles":
             MessageLookupByLibrary.simpleMessage("ایران,ایالات متحده"),
@@ -91,7 +91,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "locationNotFoundMessageTitle":
             MessageLookupByLibrary.simpleMessage("چیزی پیدا نشد!"),
         "manageLocationsSubtitle":
-            MessageLookupByLibrary.simpleMessage("مکان ها رو اضافه یا حذف کن."),
+            MessageLookupByLibrary.simpleMessage("حذف یا اضافه مکان ها"),
         "manageLocationsTitle":
             MessageLookupByLibrary.simpleMessage("مدیریت مکان ها"),
         "months": MessageLookupByLibrary.simpleMessage(
@@ -129,7 +129,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "refreshIndicatorErrorMessage": MessageLookupByLibrary.simpleMessage(
             "امکان دریافت اطلاعات از سرور وجود ندارد!"),
         "refreshIndicatorErrorState":
-            MessageLookupByLibrary.simpleMessage("یه مشکلی پیش اومده!"),
+            MessageLookupByLibrary.simpleMessage("مشکلی پیش آمده است!"),
         "refreshIndicatorLoadDataMessage": MessageLookupByLibrary.simpleMessage(
             "در حال بارگیری اطلاعات از سرور..."),
         "refreshIndicatorLoadingState": MessageLookupByLibrary.simpleMessage(
@@ -146,7 +146,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "refreshIndicatorSuccessfulState": MessageLookupByLibrary.simpleMessage(
             "داده ها با موفقیت بروز شد ;)"),
         "refreshIndicatorSwipeState": MessageLookupByLibrary.simpleMessage(
-            "برای بروزرسانی به سمت پائین بکش!"),
+            "برای بروزرسانی به سمت پائین بکشید!"),
         "requestsNumberErrorMessageSubtitle":
             MessageLookupByLibrary.simpleMessage(
                 "تعداد درخواست ها بیش از حد مجاز شده است."),
@@ -154,9 +154,9 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("سرور پاسخ نمیدهد!"),
         "retryButtonText": MessageLookupByLibrary.simpleMessage("تلاش مجدد"),
         "searchLocationTextFieldHint":
-            MessageLookupByLibrary.simpleMessage("نام مکان رو وارد کن"),
+            MessageLookupByLibrary.simpleMessage("نام مکان را وارد کنید"),
         "settingsSubtitle":
-            MessageLookupByLibrary.simpleMessage("اپلیکیشن رو شخصی سازی کن."),
+            MessageLookupByLibrary.simpleMessage("شخصی سازی اپلیکیشن"),
         "settingsTitle": MessageLookupByLibrary.simpleMessage("تنظیمات"),
         "somethingWentWrongSubtitle": MessageLookupByLibrary.simpleMessage(
             "در حال حاضر ارتباط با سرور انجام نمی شود."),
@@ -168,13 +168,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "sunriseText": MessageLookupByLibrary.simpleMessage("طلوع"),
         "sunsetText": MessageLookupByLibrary.simpleMessage("غروب"),
         "temperatureUnitBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
-            "واحد اندازه گیری دما رو انتخاب کن"),
+            "واحد اندازه گیری دما را انتخاب کنید"),
         "temperatureUnitChoiceSubtitles":
             MessageLookupByLibrary.simpleMessage("سلسیوس,فارنهایت"),
         "temperatureUnitItemText":
             MessageLookupByLibrary.simpleMessage("واحد دما"),
         "themeBottomSheetTitle":
-            MessageLookupByLibrary.simpleMessage("ظاهر برنامه رو انتخاب کن"),
+            MessageLookupByLibrary.simpleMessage("ظاهر برنامه را انتخاب کنید"),
         "themeChoiceSubtitles": MessageLookupByLibrary.simpleMessage(
             "ظاهر دستگاه,ظاهر سفید,ظاهر مشکی"),
         "themeChoiceTitles":
@@ -190,7 +190,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("میزان نور فرابنفش"),
         "visibilityTitle": MessageLookupByLibrary.simpleMessage("میزان دید"),
         "visibilityUnitBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
-            "واحد اندازه گیری میزان دید رو انتخاب کن"),
+            "واحد اندازه گیری میزان دید را انتخاب کنید"),
         "visibilityUnitChoiceSubtitles":
             MessageLookupByLibrary.simpleMessage("کیلومتر,مایل"),
         "visibilityUnitItemText":
@@ -200,7 +200,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "weekDays": MessageLookupByLibrary.simpleMessage(
             "دوشنبه,سه شنبه,چهارشنبه,پنجشنبه,جمعه,شنبه,یکشنبه"),
         "windSpeedUnitBottomSheetTitle": MessageLookupByLibrary.simpleMessage(
-            "واحد اندازه گیری سرعت باد رو انتخاب کن"),
+            "واحد اندازه گیری سرعت باد را انتخاب کنید"),
         "windSpeedUnitChoiceSubtitles": MessageLookupByLibrary.simpleMessage(
             "کیلومتر بر ساعت,مایل بر ساعت"),
         "windSpeedUnitItemText":
