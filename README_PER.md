@@ -4,7 +4,7 @@
 
 <p>
   <a href="https://opensource.org/licenses/MIT">
-    <img src="https://img.shields.io/github/license/radnive/flutter_weatherApp?logo=github" />
+    <img src="https://img.shields.io/github/license/radnive/flutter_weatherapp?logo=github" />
   </a>
 
   <img src="https://img.shields.io/badge/version-1.0.0-blueviolet" />
