@@ -64,6 +64,10 @@ class SettingsPageState extends State<SettingsPage> {
       // Tell Home page to repaint itself.
       homePageGlobalKey.currentState?.update();
     }
+
+    // Reset values to default.
+    _isHomePageNeedsToRefresh = false;
+    _isHomePageNeedsToRepaint = false;
     // Navigate to home page.
     widget.navigateTo(AppRoutePath.home());
   }

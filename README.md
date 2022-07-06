@@ -59,7 +59,7 @@ You must go to the Manage Locations page to add or remove locations. On this pag
 
 This application has been developed to run on iOS and Android devices. You can download and install this app on your device through the following links. Please let me know after the installation in case of any problems so that I can fix it in next versions.
 
-- Android apk file [31.8 MB]: [Download](https://raw.githubusercontent.com/radnive/Flutter_WeatherApp/master/output/android/WeatherApp_1.0.0.apk)
+- Android apk file [29.7 MB]: [Download](https://raw.githubusercontent.com/radnive/Flutter_WeatherApp/master/output/android/WeatherApp_1.0.0.apk)
 - iOS app: *Coming soon*
 
 ## Project cloning tips
