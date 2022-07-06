@@ -164,6 +164,9 @@ class TopAppBarState extends State<_TopAppBar> {
         homePageGlobalKey.currentState?.refresh(
           isNewLocationPinned: _isNewLocationPinned
         );
+
+        // Reset value to default.
+        _isNewLocationPinned = false;
       }
       // Navigate to Home page.
       widget.navigateTo(AppRoutePath.home());
