@@ -60,7 +60,7 @@
 
 این برنامه برای اجرا بر روی دستگاه های iOS و اندروید توسعه یافته است. از طریق لینک های زیر می توانید این برنامه را دانلود و بر روی دستگاه خود نصب کنید. لطفا پس از نصب در صورت بروز مشکل حتما به من اطلاع دهید تا در نسخه های بعدی آن را برطرف کنم.
 
-- فایل نصبی اندروید [29.7 مگابایت]: [دانلود](https://raw.githubusercontent.com/radnive/Flutter_WeatherApp/master/output/android/WeatherApp_1.0.0.apk)
+- فایل نصبی اندروید [29.8 مگابایت]: [دانلود](https://raw.githubusercontent.com/radnive/Flutter_WeatherApp/master/output/android/WeatherApp_1.0.0.apk)
 - برنامه iOS: *بزودی*
 
 ## نکات شبیه سازی پروژه

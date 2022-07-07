@@ -361,24 +361,39 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   void _loadDataFromDatabase() {
     // Check for saved home page data in database.
     if(HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey)) {
+      // Load saved data from database.
       _savedHomePageData = HomePageData.get(_db);
-      // Check saved data is up to date or not!
-      if (_savedHomePageData!.isUpToDate || !_userSettings.autoUpdate) {
-        // Load saved home page data from database.
-        _currentWeather = _savedHomePageData!.savedCurrentWeather;
-        _hourlyForecastsList = _savedHomePageData!.savedHourlyForecasts;
-        _sunStatus = _savedHomePageData!.savedSunStatus;
-        _aqiStatus = AqiStatus.random(_strings.aqiScaleText.split(','));
-        _weatherForecastsList = _savedHomePageData!.savedWeatherForecast;
 
-        // Deactivate unavailable state.
-        _isDataUnavailable = false;
-      }
+      // Load saved home page data from database.
+      _currentWeather = _savedHomePageData!.savedCurrentWeather;
+      _hourlyForecastsList = _savedHomePageData!.savedHourlyForecasts;
+      _sunStatus = _savedHomePageData!.savedSunStatus;
+      _aqiStatus = AqiStatus.random(_strings.aqiScaleText.split(','));
+      _weatherForecastsList = _savedHomePageData!.savedWeatherForecast;
+
+      // Deactivate unavailable state.
+      _isDataUnavailable = false;
     }
   }
 
   /// Refresh home page data.
   Future<DataRefreshState> _refreshHomePage(BuildContext context) async {
+    // Show data out of date message.
+    void showDataOutOfDateMessage() {
+      if(HomePageData.get(_db)?.isUpToDate == false) {
+        // Show warning message.
+        _message.w(
+          title: _strings.outOfDateDataWarningMessageTitle,
+          subtitle: _strings.outOfDateDataWarningMessageSubtitle,
+          buttonText: _strings.refreshButtonText,
+          onButtonPressed: () {
+            // Refresh home page.
+            _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
+          }
+        );
+      }
+    }
+
     // Handle errors.
     void handleErrors(DataRefreshState state) {
       switch(state) {
@@ -390,14 +405,25 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
             subtitle: _strings.requestsNumberErrorMessageSubtitle,
             buttonText: _strings.okayButtonText
           );
-          // Change state.
+
+          // Deactivate loading state.
           _isOnLoading = false;
-          _isDataUnavailable = !HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey);
+
+          // Check for saved data.
+          if(HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey)) {
+            // Deactivate unavailable state.
+            _isDataUnavailable = false;
+            // Show data out of date message.
+            showDataOutOfDateMessage();
+          } else {
+            // Activate unavailable state.
+            _isDataUnavailable = true;
+          }
           break;
 
         // When request failed.
         case DataRefreshState.error:
-          // Show warning message.
+          // Show error message.
           _message.e(
             title: _strings.somethingWentWrongTitle,
             subtitle: _strings.somethingWentWrongSubtitle,
@@ -407,9 +433,20 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
               _refreshIndicatorKey.currentState!.refresh(draggingDuration: const Duration(milliseconds: 100));
             }
           );
-          // Change state.
+
+          // Deactivate loading state.
           _isOnLoading = false;
-          _isDataUnavailable = !HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey);
+
+          // Check for saved data.
+          if(HomePageData.isDataSavedFor(_db, _pinnedLocation!.locationKey)) {
+            // Deactivate unavailable state.
+            _isDataUnavailable = false;
+            // Show data out of date message.
+            showDataOutOfDateMessage();
+          } else {
+            // Activate unavailable state.
+            _isDataUnavailable = true;
+          }
           break;
 
         // When everything is normal.
