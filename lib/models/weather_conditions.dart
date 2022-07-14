@@ -118,9 +118,12 @@ class SunStatus {
     int sunriseInSeconds = _stringTimeToInt(sunrise);
     int sunsetInSeconds = _stringTimeToInt(sunset);
     int dayLengthInSeconds = _stringTimeToInt(dayLength);
-    // If sunset already happened.
+
+    // Return zero, if sun doesn't rise yet.
+    if(nowInSeconds < sunriseInSeconds) { return 0; }
+    // Return 100, if sunset already happened.
     if (nowInSeconds >= sunsetInSeconds) { return 100; }
-    // If sun still in the sky.
+    // Calculate sun progress, if sun still in the sky.
     return ((nowInSeconds - sunriseInSeconds) * 100) / dayLengthInSeconds;
   }
   SunStatus({this.sunrise = '', this.sunset = '', this.dayLength = '', this.currentTime = ''});
