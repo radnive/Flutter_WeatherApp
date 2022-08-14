@@ -9,6 +9,8 @@ extension MapExtension on Map<String, dynamic> {
       final value = this[key];
       if(value is String) {
         output += '"$value"';
+      } else if (value is Map<String, dynamic>){
+        output += value.toJsonStr;
       } else {
         output += '$value';
       }

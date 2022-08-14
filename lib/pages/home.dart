@@ -17,7 +17,7 @@ import 'package:weather_app/database/entities/saved_location_entity.dart';
 import 'package:weather_app/database/entities/settings_entity.dart';
 import 'package:weather_app/extensions/internet.dart';
 import 'package:weather_app/generated/l10n.dart';
-import 'package:weather_app/models/aqi.dart';
+import 'package:weather_app/models/api_keys.dart';
 import 'package:weather_app/models/weather_conditions.dart';
 import 'package:weather_app/res/assets.dart';
 import 'package:weather_app/res/colors.dart';
@@ -63,8 +63,8 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
   List<HourlyForecast> _hourlyForecastsList = [];
   /// Hold sunrise and sunset data.
   SunStatus _sunStatus = SunStatus();
-  /// Hold AQI data. [FAKE DATA]
-  AqiStatus _aqiStatus = AqiStatus.empty();
+  /// Hold AQI data.
+  AirQualityIndex _airQualityIndex = AirQualityIndex.empty();
   /// Hold next 4 days weather forecasts data.
   List<WeatherForecast> _weatherForecastsList = [];
   String _next12DaysForecastUrl = '';
@@ -327,7 +327,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
                     _buildDivider(), // -----------------
                     SliverToBoxAdapter(
                       child: _AirQualityIndex(
-                        aqiStatus: _aqiStatus,
+                        aqiStatus: _airQualityIndex,
                         isOnLoading: _isOnLoading,
                         isDataUnavailable: _isDataUnavailable
                       )
@@ -368,7 +368,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
         _currentWeather = _savedHomePageData!.savedCurrentWeather;
         _hourlyForecastsList = _savedHomePageData!.savedHourlyForecasts;
         _sunStatus = _savedHomePageData!.savedSunStatus;
-        _aqiStatus = AqiStatus.random(_strings.aqiScaleText.split(','));
+        _airQualityIndex = _savedHomePageData!.savedAqi;
         _weatherForecastsList = _savedHomePageData!.savedWeatherForecast;
 
         // Deactivate unavailable state.
@@ -457,11 +457,12 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
     DataRefreshState sunStatusState = await _getSunStatus();
     if (sunStatusState != DataRefreshState.success) return sunStatusState;
 
-    // :: Create AQI fake data.
-    _aqiStatus = AqiStatus.random(_strings.aqiScaleText.split(','));
+    // :: Send GET AQI data request.
+    DataRefreshState aqiState = await _getAqi();
+    if (aqiState != DataRefreshState.success) return aqiState;
 
     // :: Send GET next 4 days weather forecasts request.
-    DataRefreshState next5DaysForecastState = await _getNext5DaysForecast();
+    DataRefreshState next5DaysForecastState = await _getNext4DaysForecast();
     if (next5DaysForecastState != DataRefreshState.success) return currentWeatherState;
 
     // :: Save all received data to database.
@@ -470,6 +471,7 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       currentWeather: _currentWeather,
       hourlyForecasts: _hourlyForecastsList,
       sunStatus: _sunStatus,
+      airQualityIndex: _airQualityIndex,
       weatherForecasts: _weatherForecastsList
     ).put(_db);
 
@@ -534,8 +536,30 @@ class HomePageState extends State<HomePage> with SingleTickerProviderStateMixin 
       DataRefreshState.noResponse : DataRefreshState.error;
     }
   }
+  /// Get air quality index from Ninja API.
+  Future<DataRefreshState> _getAqi() async {
+    // Send request and get response.
+    final aqiRes = await http.get(
+      Urls.aqi(lat: _pinnedLocation!.latitude, long: _pinnedLocation!.longitude),
+      headers: <String, String> {
+        'X-RapidAPI-Key': ApiKeys.aqi,
+        'X-RapidAPI-Host': 'air-quality-by-api-ninjas.p.rapidapi.com'
+      }
+    );
+
+    if(aqiRes.statusCode == 200) {
+      // Get data.
+      _airQualityIndex = AirQualityIndex.fromJsonRes(jsonDecode(aqiRes.body));
+
+      // Return success state.
+      return DataRefreshState.success;
+    } else {
+      return (aqiRes.statusCode == Internet.exceededRequestNumberStatusCode)?
+        DataRefreshState.noResponse : DataRefreshState.error;
+    }
+  }
   /// Get next 4 days weather forecast from AccuWeather API.
-  Future<DataRefreshState> _getNext5DaysForecast() async {
+  Future<DataRefreshState> _getNext4DaysForecast() async {
     final weatherForecastRes = await http.get(Urls.weatherForecast(
       _pinnedLocation!.locationKey,
       isMetric: _userSettings.getTemperatureUnit.isMetric
@@ -1094,7 +1118,7 @@ class _SunStatusTimeItem extends StatelessWidget {
 
 // :: AirQualityIndex
 class _AirQualityIndex extends StatelessWidget {
-  final AqiStatus aqiStatus;
+  final AirQualityIndex aqiStatus;
   final bool isOnLoading;
   final bool isDataUnavailable;
   const _AirQualityIndex({
@@ -1150,25 +1174,9 @@ class _AirQualityIndex extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  Text(
-                    _strings.airQualityIndexTitle,
-                    style: _types.headline6!.apply(color: _palette.onBackground)
-                  ),
-                  const SizedBox(width: 8),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: _palette.divider,
-                      borderRadius: BorderRadius.circular(Dimens.smallShapesBorderRadius)
-                    ),
-                    child: Text(
-                      _strings.aqiFakeDateTagText,
-                      style: _types.overline!.apply(color: _palette.subtitle)
-                    ),
-                  )
-                ],
+              Text(
+                _strings.airQualityIndexTitle,
+                style: _types.headline6!.apply(color: _palette.onBackground)
               ),
               const SizedBox(height: 3),
               RichText(
@@ -1181,9 +1189,9 @@ class _AirQualityIndex extends StatelessWidget {
                       style: _types.caption!.apply(color: _palette.subtitle)
                     ),
                     TextSpan(
-                      text: (isDataUnavailable)? '---' : aqiStatus.status,
+                      text: (isDataUnavailable)? '---' : _strings.aqiScaleText.split(',')[aqiStatus.overall.scale],
                       style: _types.caption!.copyWith(
-                        color: aqiStatus.aqi.getColor(_palette),
+                        color: aqiStatus.overall.getColor(_palette),
                         fontWeight: FontWeight.w500
                       )
                     ),
@@ -1284,9 +1292,9 @@ class _AirQualityIndex extends StatelessWidget {
                       dimensions: Dimens.aqiProgressBarSize,
                       startAngle: 225,
                       sweepAngle: 270,
-                      progress: (isDataUnavailable)? 0 : aqiStatus.aqi.value.toDouble(),
-                      maxProgress: aqiStatus.aqi.maxValue.toDouble(),
-                      foregroundColor: aqiStatus.aqi.getColor(_palette),
+                      progress: (isDataUnavailable)? 0 : aqiStatus.overall.value.toDouble(),
+                      maxProgress: aqiStatus.overall.maxValue.toDouble(),
+                      foregroundColor: aqiStatus.overall.getColor(_palette),
                       backgroundColor: _palette.border,
                       foregroundStrokeWidth: 12,
                       backgroundStrokeWidth: 12,
@@ -1294,8 +1302,8 @@ class _AirQualityIndex extends StatelessWidget {
                       child: Align(
                         alignment: Alignment.center,
                         child: Text(
-                          '${(isDataUnavailable)? '---' : aqiStatus.aqi.value}',
-                          style: _types.aqiValue.apply(color: aqiStatus.aqi.getColor(_palette)),
+                          '${(isDataUnavailable)? '---' : aqiStatus.overall.value}',
+                          style: _types.aqiValue.apply(color: aqiStatus.overall.getColor(_palette)),
                         ),
                       ),
                     ),
@@ -1343,7 +1351,7 @@ class _AirQualityIndex extends StatelessWidget {
 
 class GasInfo extends StatelessWidget {
   final String gasFormula, gasSub;
-  final AqiInfo gasInfo;
+  final AqiValue gasInfo;
   final bool isOnLoading;
   final bool isDataUnavailable;
   const GasInfo({
@@ -1355,7 +1363,7 @@ class GasInfo extends StatelessWidget {
     this.isDataUnavailable = false
   }) : super(key: key);
 
-  factory GasInfo.shimmer() => GasInfo(gasInfo: AqiInfo(0, 0), isOnLoading: true);
+  factory GasInfo.shimmer() => GasInfo(gasInfo: AqiValue(value: 0), isOnLoading: true);
 
   /// Build shimmer style.
   Row _buildShimmer(BuildContext context) {

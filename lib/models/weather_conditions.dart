@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart' show ColorScheme, Color;
+import 'package:weather_app/res/colors.dart' show ColorSchemeExtension;
 import 'package:json_annotation/json_annotation.dart';
 import 'package:weather_app/extensions/date.dart';
 part 'weather_conditions.g.dart';
@@ -150,6 +152,163 @@ class SunStatus {
     }
     return output;
   }
+}
+
+@JsonSerializable()
+class AirQualityIndex {
+  final AqiValue overall, pm10, pm2_5, co, no2, so2, o3;
+
+  AirQualityIndex({
+    required this.overall,
+    required this.pm10,
+    required this.pm2_5,
+    required this.co,
+    required this.no2,
+    required this.so2,
+    required this.o3
+  });
+
+  factory AirQualityIndex.empty() => AirQualityIndex(
+    overall: AqiValue(value: 0),
+    pm10: AqiValue(value: 0),
+    pm2_5: AqiValue(value: 0),
+    co: AqiValue(value: 0),
+    no2: AqiValue(value: 0),
+    so2: AqiValue(value: 0),
+    o3: AqiValue(value: 0)
+  );
+
+  factory AirQualityIndex.fromJsonRes(Map<String, dynamic> json) => AirQualityIndex(
+    overall: AqiValue.create(value: json['overall_aqi'], scales: AqiScales.aqiScale),
+    pm10: AqiValue.create(value: json['PM10']['aqi'], scales: AqiScales.pm10Scale),
+    pm2_5: AqiValue.create(value: json['PM2.5']['aqi'], scales: AqiScales.pm2_5Scale),
+    co: AqiValue.create(value: json['CO']['aqi'], scales: AqiScales.coScale),
+    no2: AqiValue.create(value: json['NO2']['aqi'], scales: AqiScales.no2Scale),
+    so2: AqiValue.create(value: json['SO2']['aqi'], scales: AqiScales.so2Scale),
+    o3: AqiValue.create(value: json['O3']['aqi'], scales: AqiScales.o3Scale)
+  );
+
+  factory AirQualityIndex.fromJson(Map<String, dynamic> json) => _$AirQualityIndexFromJson(json);
+  Map<String, dynamic> toJson() => _$AirQualityIndexToJson(this);
+}
+
+@JsonSerializable()
+class AqiValue {
+  final int value;
+  final int scale;
+  final int maxValue;
+  double get percent => (value * 100) / maxValue;
+
+  AqiValue({required this.value, this.scale = 0, this.maxValue = 0});
+
+  factory AqiValue.create({required int value, required List<IntRange> scales}) => AqiValue(
+    value: value,
+    scale: getScale(value, scales),
+    maxValue: scales.last.endOffset
+  );
+
+  factory AqiValue.fromJson(Map<String, dynamic> json) => _$AqiValueFromJson(json);
+  Map<String, dynamic> toJson() => _$AqiValueToJson(this);
+
+  /// Get Scale based on value.
+  static int getScale(int currentValue, List<IntRange> scales) {
+    if(scales.last.endOffset <= currentValue) return scales.length - 1;
+
+    for (int i = 0; i < scales.length; i++) {
+      if (scales[i].contains(currentValue)) {
+        return i;
+      }
+    }
+
+    return 0;
+  }
+
+  /// Get color based on scale value.
+  Color getColor(ColorScheme palette) {
+    switch (scale) {
+      case 0 : return palette.info; // <- Excellent
+      case 1 : return palette.success; // <- Good
+      case 2 : return palette.warning; // <- Fair
+      case 3 : return palette.seriousWarning; // <- Poor
+      case 4 : return palette.error; // <- Unhealthy
+      case 5 : return palette.danger; // <- Dangerous
+      default: return palette.onBackground;
+    }
+  }
+}
+
+class IntRange {
+  int startOffset;
+  int endOffset;
+  IntRange(this.startOffset, this.endOffset);
+
+  bool contains(int value) => (startOffset <= value) && (endOffset >= value);
+}
+
+class AqiScales {
+  // Scale ranges.
+  static List<IntRange> aqiScale = [
+    IntRange(0, 19), // <- Excellent
+    IntRange(20, 49), // <- Good
+    IntRange(50, 99), // <- Fair
+    IntRange(100, 149), // <- Poor
+    IntRange(150, 249), // <- Unhealthy
+    IntRange(250, 500) // <- Dangerous
+  ];
+
+  static List<IntRange> pm10Scale = [
+    IntRange(0, 12), // <- Excellent
+    IntRange(13, 25), // <- Good
+    IntRange(26, 50), // <- Fair
+    IntRange(51, 90), // <- Poor
+    IntRange(91, 180), // <- Unhealthy
+    IntRange(180, 250), // <- Dangerous
+  ];
+
+  static List<IntRange> pm2_5Scale = [
+    IntRange(0, 7), // <- Excellent
+    IntRange(8, 15), // <- Good
+    IntRange(16, 30), // <- Fair
+    IntRange(31, 55), // <- Poor
+    IntRange(56, 110), // <- Unhealthy
+    IntRange(110, 170), // <- Dangerous
+  ];
+
+  static List<IntRange> coScale = [
+    IntRange(0, 2), // <- Excellent
+    IntRange(3, 5), // <- Good
+    IntRange(6, 8), // <- Fair
+    IntRange(9, 30), // <- Poor
+    IntRange(31, 100), // <- Unhealthy
+    IntRange(101, 150), // <- Dangerous
+  ];
+
+  static List<IntRange> no2Scale = [
+    IntRange(0, 25), // <- Excellent
+    IntRange(26, 50), // <- Good
+    IntRange(51, 100), // <- Fair
+    IntRange(101, 200), // <- Poor
+    IntRange(201, 400), // <- Unhealthy
+    IntRange(401, 500), // <- Dangerous
+  ];
+
+  static List<IntRange> so2Scale = [
+    IntRange(0, 25), // <- Excellent
+    IntRange(26, 50), // <- Good
+    IntRange(51, 120), // <- Fair
+    IntRange(121, 350), // <- Poor
+    IntRange(351, 500), // <- Unhealthy
+    IntRange(501, 550), // <- Dangerous
+  ];
+
+  static List<IntRange> o3Scale = [
+    IntRange(0, 32), // <- Excellent
+    IntRange(33, 64), // <- Good
+    IntRange(65, 119), // <- Fair
+    IntRange(120, 179), // <- Poor
+    IntRange(180, 239), // <- Unhealthy
+    IntRange(240, 280), // <- Dangerous
+  ];
 }
 
 @JsonSerializable()
