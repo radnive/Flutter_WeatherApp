@@ -20,4 +20,5 @@ class Date {
 
   String _formatNumForTime(int num) => (num <= 9)? '0$num' : '$num';
   String get timeStr => '${_formatNumForTime(dateTime.hour)}:${_formatNumForTime(dateTime.minute)}';
+  String get hourStr => '${_formatNumForTime(dateTime.hour)}:00';
 }

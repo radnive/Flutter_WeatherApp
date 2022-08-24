@@ -907,7 +907,7 @@ class _HourlyWeatherForecast extends StatelessWidget {
       HourlyForecast hf = forecasts[index];
       items.add(_HourlyForecastItem(
         icon: ImageAssets.weatherIcons[hf.weatherIcon],
-        time: hf.date.timeStr,
+        time: hf.date.hourStr,
         temperature: hf.temperature,
         isDataUnavailable: isDataUnavailable,
       ));
