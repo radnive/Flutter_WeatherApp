@@ -16,6 +16,7 @@ class HomePageData {
   String currentWeather;
   List<String> hourlyForecasts;
   String sunStatus;
+  String aqi;
   List<String> weatherForecasts;
 
   bool get isUpToDate => DateTime.now().difference(date).inHours <= 1;
@@ -23,6 +24,7 @@ class HomePageData {
   List<HourlyForecast> get savedHourlyForecasts => hourlyForecasts.to<HourlyForecast>(
           (hf) => HourlyForecast.fromJson(jsonDecode(hf)));
   SunStatus get savedSunStatus => SunStatus.fromJson(jsonDecode(sunStatus));
+  AirQualityIndex get savedAqi => AirQualityIndex.fromJson(jsonDecode(aqi));
   List<WeatherForecast> get savedWeatherForecast => weatherForecasts.to<WeatherForecast>(
           (wf) => WeatherForecast.fromJson(jsonDecode(wf)));
 
@@ -33,6 +35,7 @@ class HomePageData {
     this.currentWeather = '',
     this.hourlyForecasts = const [],
     this.sunStatus = '',
+    this.aqi = '',
     this.weatherForecasts = const []
   });
 
@@ -41,6 +44,7 @@ class HomePageData {
     required CurrentWeather currentWeather,
     required List<HourlyForecast> hourlyForecasts,
     required SunStatus sunStatus,
+    required AirQualityIndex airQualityIndex,
     required List<WeatherForecast> weatherForecasts
   }) => HomePageData(
       locationKey: locationKey,
@@ -48,6 +52,7 @@ class HomePageData {
       currentWeather: currentWeather.toJson().toJsonStr,
       hourlyForecasts: hourlyForecasts.to<String>((hf) => hf.toJson().toJsonStr),
       sunStatus: sunStatus.toJson().toJsonStr,
+      aqi: airQualityIndex.toJson().toJsonStr,
       weatherForecasts: weatherForecasts.to<String>((wf) => wf.toJson().toJsonStr)
   );
 

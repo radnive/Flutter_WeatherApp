@@ -76,6 +76,40 @@ Map<String, dynamic> _$SunStatusToJson(SunStatus instance) => <String, dynamic>{
       'currentTime': instance.currentTime,
     };
 
+AirQualityIndex _$AirQualityIndexFromJson(Map<String, dynamic> json) =>
+    AirQualityIndex(
+      overall: AqiValue.fromJson(json['overall'] as Map<String, dynamic>),
+      pm10: AqiValue.fromJson(json['pm10'] as Map<String, dynamic>),
+      pm2_5: AqiValue.fromJson(json['pm2_5'] as Map<String, dynamic>),
+      co: AqiValue.fromJson(json['co'] as Map<String, dynamic>),
+      no2: AqiValue.fromJson(json['no2'] as Map<String, dynamic>),
+      so2: AqiValue.fromJson(json['so2'] as Map<String, dynamic>),
+      o3: AqiValue.fromJson(json['o3'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$AirQualityIndexToJson(AirQualityIndex instance) =>
+    <String, dynamic>{
+      'overall': instance.overall.toJson(),
+      'pm10': instance.pm10.toJson(),
+      'pm2_5': instance.pm2_5.toJson(),
+      'co': instance.co.toJson(),
+      'no2': instance.no2.toJson(),
+      'so2': instance.so2.toJson(),
+      'o3': instance.o3.toJson(),
+    };
+
+AqiValue _$AqiValueFromJson(Map<String, dynamic> json) => AqiValue(
+      value: json['value'] as int,
+      scale: json['scale'] as int? ?? 0,
+      maxValue: json['maxValue'] as int? ?? 0,
+    );
+
+Map<String, dynamic> _$AqiValueToJson(AqiValue instance) => <String, dynamic>{
+      'value': instance.value,
+      'scale': instance.scale,
+      'maxValue': instance.maxValue,
+    };
+
 WeatherForecast _$WeatherForecastFromJson(Map<String, dynamic> json) =>
     WeatherForecast(
       dateTime: DateTime.parse(json['dateTime'] as String),

@@ -54,6 +54,10 @@ class Urls {
   static Uri sunStatus({required double lat, required double long}) =>
     Uri.parse('https://api.ipgeolocation.io/astronomy?${ApiKeys.ipGeoLocation}&lat=$lat&long=$long');
 
+  /// Get air quality index.
+  static Uri aqi({required double lat, required double long}) =>
+    Uri.parse('https://air-quality-by-api-ninjas.p.rapidapi.com/v1/airquality?lat=$lat&lon=$long');
+
   /// Get next 4 days forecast.
   static Uri weatherForecast(String locationKey, { required bool isMetric }) {
     final String useMetric = (isMetric)? '&metric=true' : '';
