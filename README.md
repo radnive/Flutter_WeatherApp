@@ -31,7 +31,7 @@ English | [پارسی](https://github.com/radnive/Flutter_WeatherApp/blob/master
 
 ## What is Weather App?
 
-Weather App is an ad-free & free-to-use application to display the weather in the simplest possible way for the user. By summarising the weather in plain-spoken and user-friendly language via its one-of-a-kind Timeline screen. No more scrolling long lists to figure out the weather as it's now summarised for you in a few lines and makes checking the weather fast, easy and actually fun! Also this app will help you plan your time around the weather in a concise and minimalistic manner. Be aware of any precipitation within an hour with a minute precision. Weather App can tell you, which part of the day is going to have a clear sky and light breeze perfect for a run or bike ride for 4 days ahead.This app uses free API plans, so it is only allowed to send 50 requests per day to these APIs. Air quality index information is also fake because currently, there is no free API for Air quality index, but this feature may be added to the app in the future. Now, if you want, [you can download and install the app from this section](#download-application).
+Weather App is an ad-free & free-to-use application to display the weather in the simplest possible way for the user. By summarising the weather in plain-spoken and user-friendly language via its one-of-a-kind Timeline screen. No more scrolling long lists to figure out the weather as it's now summarised for you in a few lines and makes checking the weather fast, easy and actually fun! Also this app will help you plan your time around the weather in a concise and minimalistic manner. Be aware of any precipitation within an hour with a minute precision. Weather App can tell you, which part of the day is going to have a clear sky and light breeze perfect for a run or bike ride for 4 days ahead.This app uses free API plans, so it is only allowed to send 50 requests per day to these APIs. Now, if you want, [you can download and install the app from this section](#download-application).
 
 ## Reasons to love Weather App
 
@@ -39,7 +39,7 @@ In this section, we will review some reasons why we should love the **Weather Ap
 
 ### 1. Easily find the information you need
 
-On the home page, you can see information about wind speed, UV index, real feels of temperature, humidity and visibility distance and also be informed about the current weather conditions and 12 hours ahead. In addition, the exact time of sunrise and sunset, the quality of the air (although the data is currently fake) and the weather forecast for the next 4 days will be available.
+On the home page, you can see information about wind speed, UV index, real feels of temperature, humidity and visibility distance and also be informed about the current weather conditions and 12 hours ahead. In addition, the exact time of sunrise and sunset, the quality of the air and the weather forecast for the next 4 days will be available.
 
 <img width="100%" src="https://raw.githubusercontent.com/radnive/Flutter_WeatherApp/master/screenshots/english/home.png" />
 
@@ -73,6 +73,7 @@ API keys have also been removed from the project, and you must first create a ne
 
 - AccuWeather website: [SignUp page](https://developer.accuweather.com/apis)
 - IpGeoLocation website: [SignUp page](https://ipgeolocation.io/signup.html)
+- NinjaApi page in RapidApi website: [SignUp page](https://rapidapi.com/apininjas/api/air-quality-by-api-ninjas/)
 
 After creating the accounts, create a file called **api_keys.dart** in the **lib/models** path and place the following keys instead of **YOUR_API_KEY** statements:
 
@@ -80,6 +81,7 @@ After creating the accounts, create a file called **api_keys.dart** in the **lib
 class ApiKeys {
   static const String accuweather = 'apikey=YOUR_API_KEY';
   static const String ipGeoLocation = 'apiKey=YOUR_API_KEY';
+  static const String aqi = 'YOUR_API_KEY';
 }
 ```
 
