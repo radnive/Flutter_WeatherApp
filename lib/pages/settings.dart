@@ -24,7 +24,7 @@ late ColorScheme _palette;
 late TextTheme _types;
 late S _strings;
 
-const String _appVersion = '1.0.0';
+const String _appVersion = '1.0.1';
 
 class SettingsPage extends StatefulWidget {
   final void Function(AppRoutePath routePath) navigateTo;
